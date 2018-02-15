@@ -45,7 +45,6 @@ public class View extends GLSurfaceView {
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        GameLib.touch();
-        return true;
+        return GameLib.touch();
     }
 }
