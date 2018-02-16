@@ -8,7 +8,6 @@
 #include "Renderer.h"
 #include <jni.h>
 #include <time.h>
-#include <GLES3/gl3.h>
 
 Game::Game()
         : m_iLastFrameTimeMiliSecs(0)
@@ -44,8 +43,7 @@ void Game::Update()
 void Game::Render()
 {
 	// Clean the screen
-    glClearColor(0.678431373f, 0.847058824f, 0.901960784f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_pRenderer->PreRender();
 	// Render the entities in the game
 	for (unsigned int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
 	{
