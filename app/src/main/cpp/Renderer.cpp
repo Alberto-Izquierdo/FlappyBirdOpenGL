@@ -20,34 +20,11 @@ Renderer::Renderer()
 			"vertexColor = aColor;\n"
 		"}\n";
 
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	GLuint vertexShader = CreateShader(VertexSource, GLShader::VERTEX);
 
 	if (!vertexShader)
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "VS", "Error creating vertex shader");
-        return;
-	}
-
-	glShaderSource(vertexShader, 1, &VertexSource, NULL);
-	GLint iCompiled = GL_FALSE;
-	glCompileShader(vertexShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &iCompiled);
-
-	if (!iCompiled)
-	{
-
-        GLint infoLogLen = 0;
-        glGetShaderiv(vertexShader, GL_INFO_LOG_LENGTH, &infoLogLen);
-        if (infoLogLen > 0) {
-            GLchar* infoLog = (GLchar*)malloc(infoLogLen);
-            if (infoLog) {
-                glGetShaderInfoLog(vertexShader, infoLogLen, NULL, infoLog);
-                __android_log_print(ANDROID_LOG_ERROR, "VS", "Error compiling vertex shader: \n%s", infoLog);
-                free(infoLog);
-            }
-        }
-		glDeleteShader(vertexShader);
-        return;
+		return;
 	}
 
 	const char* FragmentSource =
@@ -58,47 +35,15 @@ Renderer::Renderer()
 			"fragColor = vertexColor;\n"
 		"}\n\0";
 
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	GLuint fragmentShader = CreateShader(FragmentSource, GLShader::FRAGMENT);
 
 	if (!fragmentShader)
 	{
-		__android_log_print(ANDROID_LOG_ERROR, "FS", "Error creating fragment shader");
-        glDeleteShader(vertexShader);
-        return;
-	}
-
-	glShaderSource(fragmentShader, 1, &FragmentSource, NULL);
-	iCompiled = GL_FALSE;
-	glCompileShader(fragmentShader);
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &iCompiled);
-
-	if (!iCompiled)
-	{
-		__android_log_print(ANDROID_LOG_ERROR, "FS", "Error compiling fragment shader");
 		glDeleteShader(vertexShader);
-		glDeleteShader(fragmentShader);
-        return;
+		return;
 	}
 
-	m_iProgram = glCreateProgram();
-
-	if (!m_iProgram)
-	{
-		//TODO: handle error
-	}
-	glAttachShader(m_iProgram, vertexShader);
-	glAttachShader(m_iProgram, fragmentShader);
-	glLinkProgram(m_iProgram);
-	GLint iLinked = GL_FALSE;
-	glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iLinked);
-
-	if (!iLinked)
-	{
-        __android_log_print(ANDROID_LOG_ERROR, "PR", "Error linking");
-	}
-
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	CreateProgram(vertexShader, fragmentShader);
 }
 
 Renderer::~Renderer()
@@ -114,4 +59,64 @@ void Renderer::PreRender()
 void Renderer::Render(Entity* _pEntity)
 {
 	
+}
+
+unsigned int Renderer::CreateShader(const char* _pSource, GLShader _eShaderType)
+{
+	GLuint iShader = glCreateShader(_eShaderType == GLShader::VERTEX ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
+
+	if (!iShader)
+	{
+		__android_log_print(ANDROID_LOG_ERROR, "CREA", "Error creating %s shader", _eShaderType == GLShader::VERTEX ? "vertex" : "fragment");
+        return 0;
+	}
+
+	glShaderSource(iShader, 1, &_pSource, NULL);
+	GLint iCompiled = GL_FALSE;
+	glCompileShader(iShader);
+	glGetShaderiv(iShader, GL_COMPILE_STATUS, &iCompiled);
+
+	if (!iCompiled)
+	{
+        GLint infoLogLen = 0;
+        glGetShaderiv(iShader, GL_INFO_LOG_LENGTH, &infoLogLen);
+        if (infoLogLen > 0) {
+            GLchar* infoLog = (GLchar*)malloc(infoLogLen);
+            if (infoLog) {
+                glGetShaderInfoLog(iShader, infoLogLen, NULL, infoLog);
+                __android_log_print(ANDROID_LOG_ERROR, "COMP", "Error compiling %s shader: \n%s", _eShaderType == GLShader::VERTEX ? "vertex" : "fragment", infoLog);
+                free(infoLog);
+            }
+        }
+		glDeleteShader(iShader);
+        return 0;
+	}
+
+	return iShader;
+}
+
+void Renderer::CreateProgram(unsigned int _iVertexShader, unsigned int _iFragmentShader)
+{
+	m_iProgram = glCreateProgram();
+
+	if (!m_iProgram)
+	{
+		glDeleteShader(_iVertexShader);
+		glDeleteShader(_iFragmentShader);
+		return;
+	}
+
+	glAttachShader(m_iProgram, _iVertexShader);
+	glAttachShader(m_iProgram, _iFragmentShader);
+	glLinkProgram(m_iProgram);
+	GLint iLinked = GL_FALSE;
+	glGetProgramiv(m_iProgram, GL_LINK_STATUS, &iLinked);
+
+	if (!iLinked)
+	{
+        __android_log_print(ANDROID_LOG_ERROR, "LINK", "Error linking");
+	}
+
+	glDeleteShader(_iVertexShader);
+	glDeleteShader(_iFragmentShader);
 }

@@ -3,6 +3,7 @@
 Player::Player()
 	: m_fYVelocity(0.f)
 {
+	m_iWidth = m_iHeight = 20;
 }
 
 Player::~Player()

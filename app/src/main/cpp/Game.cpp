@@ -47,10 +47,10 @@ void Game::Render()
 	// Render the entities in the game
 	for (unsigned int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
 	{
-		m_vEntities.at(i)->Render();
+		m_pRenderer->Render(m_vEntities.at(i));
 	}
 
-	m_pPlayer->Render();
+	m_pRenderer->Render(m_pPlayer);
 }
 
 static Game* pGame = NULL;
