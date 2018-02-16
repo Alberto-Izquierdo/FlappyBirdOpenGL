@@ -14,9 +14,11 @@ class Game {
 public:
     Game();
 	void Update();
+	void Render();
 private:
 	unsigned int m_iLastFrameTimeMiliSecs;
 	Renderer* m_pRenderer;
+	Entity* m_pPlayer;
 	std::vector<Entity*> m_vEntities;
 };
 

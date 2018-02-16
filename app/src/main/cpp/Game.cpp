@@ -3,14 +3,18 @@
 //
 
 #include "Game.h"
-#include "Entity.h"
+#include "Player.h"
+#include "Pipe.h"
 #include "Renderer.h"
 #include <jni.h>
 #include <time.h>
+#include <GLES3/gl3.h>
+
 Game::Game()
         : m_iLastFrameTimeMiliSecs(0)
 {
     m_pRenderer = new Renderer();
+	m_pPlayer = new Player();
 }
 
 void Game::Update()
@@ -24,19 +28,31 @@ void Game::Update()
         float fDeltaTime = (float)(iNowMiliSecs - m_iLastFrameTimeMiliSecs) / 1000.f;
 
         // Update the entities in the game
+		m_pPlayer->Update(fDeltaTime);
+
         for (int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
         {
             m_vEntities.at(i)->Update(fDeltaTime);
         }
 
-        // Render the entities in the game
-        for (int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
-        {
-            m_vEntities.at(i)->Render();
-        }
+		Render();
     }
 
     m_iLastFrameTimeMiliSecs = iNowMiliSecs;
+}
+
+void Game::Render()
+{
+	// Clean the screen
+    glClearColor(0.678431373f, 0.847058824f, 0.901960784f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Render the entities in the game
+	for (unsigned int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
+	{
+		m_vEntities.at(i)->Render();
+	}
+
+	m_pPlayer->Render();
 }
 
 static Game* pGame = NULL;
