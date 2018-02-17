@@ -18,6 +18,7 @@ public:
 protected:
 	float m_fX, m_fY;
 	int m_iWidth, m_iHeight;
+	float m_fRotation;
 	unsigned char m_Color[4];
 };
 

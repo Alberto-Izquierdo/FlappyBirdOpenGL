@@ -10,6 +10,13 @@
 
 Renderer::Renderer()
 {
+    m_vIndices[0] = 0;
+    m_vIndices[1] = 1;
+    m_vIndices[2] = 2;
+    m_vIndices[3] = 2;
+    m_vIndices[4] = 3;
+    m_vIndices[5] = 0;
+
 	const char* VertexSource =
 		"#version 300 es\n"
 		"layout (location = 0) in vec2 aPos;\n"
@@ -44,10 +51,14 @@ Renderer::Renderer()
 	}
 
 	CreateProgram(vertexShader, fragmentShader);
+	InitBuffers();
+	InitAttribPointers();
 }
 
 Renderer::~Renderer()
 {
+	DeleteBuffers();
+	glDeleteProgram(m_iProgram);
 }
 
 void Renderer::PreRender()
@@ -119,4 +130,33 @@ void Renderer::CreateProgram(unsigned int _iVertexShader, unsigned int _iFragmen
 
 	glDeleteShader(_iVertexShader);
 	glDeleteShader(_iFragmentShader);
+}
+
+void Renderer::InitBuffers()
+{
+	glGenBuffers(1, &m_VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD), &QUAD[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &m_VAO);
+	glBindVertexArray(m_VAO);
+
+	glGenBuffers(1, &m_EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_vIndices), m_vIndices, GL_STATIC_DRAW);
+}
+
+void Renderer::DeleteBuffers()
+{
+	glDeleteVertexArrays(1, &m_VAO);
+	glDeleteBuffers(1, &m_VBO);
+	glDeleteBuffers(1, &m_EBO);
+}
+
+void Renderer::InitAttribPointers()
+{
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(float)));
+	glEnableVertexAttribArray(1);
 }

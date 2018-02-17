@@ -5,6 +5,7 @@ Entity::Entity()
 	, m_fY(0.f)
 	, m_iWidth(0)
 	, m_iHeight(0)
+	, m_fRotation(0.f)
 {
     m_Color[0] = 0;
     m_Color[1] = 0;

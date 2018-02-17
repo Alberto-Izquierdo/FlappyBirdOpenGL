@@ -11,6 +11,12 @@ enum GLShader
 	FRAGMENT
 };
 
+struct Vertex
+{
+	int m_vPosition[2];
+	unsigned char m_vColor[4];
+};
+
 class Entity;
 
 class Renderer {
@@ -24,9 +30,17 @@ private:
 	unsigned int m_iProgram;
 	unsigned int m_iPosAttrib;
 	unsigned int m_iColoAttrib;
+	unsigned int m_VAO;
+	unsigned int m_VBO;
+	unsigned int m_EBO;
+	Vertex QUAD[4];
+	unsigned int m_vIndices[6];
 
 	unsigned int CreateShader(const char* _pSource, GLShader _eShaderType);
 	void CreateProgram(unsigned int _iVertexShader, unsigned int _iFragmentShader);
+	void InitBuffers();
+	void DeleteBuffers();
+	void InitAttribPointers();
 };
 
 
