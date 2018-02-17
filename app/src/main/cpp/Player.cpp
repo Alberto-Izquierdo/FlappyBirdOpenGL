@@ -1,11 +1,12 @@
 #include "Player.h"
 
 Player::Player()
-	: m_fYVelocity(0.f)
+	: Entity()
+	, m_fYVelocity(0.f)
 {
-    m_fX = -0.5f;
-    m_fY = -0.5f;
-	m_fWidth = m_fHeight = 1.f;
+    m_fX = 100.f;
+    m_fY = 1000.f;
+	m_fWidth = m_fHeight = 300.f;
     m_Color[0] = 1.0f;
 }
 

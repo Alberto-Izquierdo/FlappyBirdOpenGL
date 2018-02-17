@@ -14,6 +14,7 @@ Game::Game()
 {
     m_pRenderer = new Renderer();
 	m_pPlayer = new Player();
+	m_vEntities.push_back(new Pipe());
 }
 
 void Game::Update()
@@ -31,7 +32,16 @@ void Game::Update()
 
         for (int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
         {
-            m_vEntities.at(i)->Update(fDeltaTime);
+			Entity* pEntity = m_vEntities.at(i);
+            pEntity->Update(fDeltaTime);
+
+			if (pEntity->IsFinished())
+			{
+				delete pEntity;
+				m_vEntities.erase(m_vEntities.begin() + i);
+				--i;
+				--iSize;
+			}
         }
 
 		Render();

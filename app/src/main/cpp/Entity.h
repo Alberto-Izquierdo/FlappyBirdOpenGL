@@ -15,6 +15,8 @@ public:
 	float GetHeight() const { return m_fHeight; };
 	float* GetColor() { return m_Color; };
 
+	virtual bool IsFinished() = 0;
+
 protected:
 	float m_fX, m_fY;
 	float m_fWidth, m_fHeight;

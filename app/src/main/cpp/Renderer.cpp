@@ -3,24 +3,28 @@
 //
 
 #include "Renderer.h"
+#include "Entity.h"
+#include "Constants.h"
+
 #include <EGL/egl.h>
 #include <stdlib.h>
 #include <GLES3/gl3.h>
 #include <android/log.h>
-#include "Entity.h"
 
 Renderer::Renderer()
 {
 	FillDefaultRectangle();
 	const char* VertexSource =
         "attribute vec2 aPos;\n"
-		"attribute vec4 aColor;\n"
 		"uniform vec2 uPos;\n"
+		"uniform vec2 uScale;\n"
 		"uniform vec4 uColor;\n"
 		"varying vec4 vertexColor;\n"
+		"vec2 finalPosition;\n"
 		"void main () {\n"
-			"gl_Position = vec4(aPos, 0.0, 1.0);\n"
-			"vertexColor = aColor;\n"
+			"finalPosition = aPos * uScale + uPos;\n"
+			"gl_Position = vec4(finalPosition, 0.0, 1.0);\n"
+			"vertexColor = uColor;\n"
 		"}\n\0";
 
 	GLuint vertexShader = CreateShader(VertexSource, GLShader::VERTEX);
@@ -46,7 +50,7 @@ Renderer::Renderer()
 	}
 
 	CreateProgram(vertexShader, fragmentShader);
-	GetAttribLocations();
+	GetAttribAndUniformLocations();
 	InitBuffers();
 }
 
@@ -63,9 +67,7 @@ void Renderer::PreRender()
     glUseProgram(m_iProgram);
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glVertexAttribPointer(m_iPosAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glVertexAttribPointer(m_iColorAttribute, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(float)));
 	glEnableVertexAttribArray(m_iPosAttribute);
-	glEnableVertexAttribArray(m_iColorAttribute);
 
 	GLint err = glGetError();
 	if (err != GL_NO_ERROR) {
@@ -75,6 +77,18 @@ void Renderer::PreRender()
 
 void Renderer::Render(Entity* _pEntity)
 {
+	float width = _pEntity->GetWidht();
+	float height = _pEntity->GetHeight();
+	float fScale[2];
+	fScale[0] = width / k_fUnitX;
+	fScale[1] = height / k_fUnitY;
+	glUniform2f(m_iScaleUniform, fScale[0], fScale[1]);
+	float fPosition[2];
+	fPosition[0] = (_pEntity->GetX() + width / 2) / Constants::k_fWorldWidth * 2.f - 1.f;
+	fPosition[1] = (_pEntity->GetY() + height / 2) / Constants::k_fWorldHeight * 2.f - 1.f;
+	glUniform2f(m_iPosUniform, fPosition[0], fPosition[1]);
+	float* color = _pEntity->GetColor();
+	glUniform4f(m_iColorUniform, color[0], color[1], color[2], color[3]);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -150,24 +164,27 @@ void Renderer::DeleteBuffers()
 	glDeleteBuffers(1, &m_VBO);
 }
 
-void Renderer::GetAttribLocations()
+void Renderer::GetAttribAndUniformLocations()
 {
 	m_iPosAttribute = glGetAttribLocation(m_iProgram, "aPos");
-    m_iColorAttribute = glGetAttribLocation(m_iProgram, "aColor");
+    m_iPosUniform = glGetUniformLocation(m_iProgram, "uPos");
+    m_iScaleUniform = glGetUniformLocation(m_iProgram, "uScale");
+    m_iColorUniform = glGetUniformLocation(m_iProgram, "uColor");
 }
 
 void Renderer::FillDefaultRectangle()
 {
-	float xOffsets [6] = {0.f, 1.f, 1.f, 0.f, 1.f, 0.f};
-	float yOffsets [6] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f};
+	float unitX = k_fUnitX / Constants::k_fWorldWidth / 2.f;
+	float unitY = k_fUnitY / Constants::k_fWorldHeight / 2.f;
+	float xOffsets [6] = {0.f, unitX, unitX, 0.f, unitX, 0.f};
+	float yOffsets [6] = {0.f, 0.f, unitY, 0.f, unitY, unitY};
 
 	for (int i = 0; i < 6; ++i)
 	{
-		m_Rectangle[i].m_vPosition[0] = -0.5f + xOffsets[i];
-		m_Rectangle[i].m_vPosition[1] = -0.5f + yOffsets[i];
-		m_Rectangle[i].m_vColor[0] = 1.f;
-		m_Rectangle[i].m_vColor[1] = 1.f;
-		m_Rectangle[i].m_vColor[2] = 1.f;
-		m_Rectangle[i].m_vColor[3] = 1.f;
+		m_Rectangle[i].m_vPosition[0] = -unitX + xOffsets[i];
+		m_Rectangle[i].m_vPosition[1] = -unitY + yOffsets[i];
 	}
 }
+
+const float Renderer::k_fUnitX = 300.f;
+const float Renderer::k_fUnitY = 300.f;

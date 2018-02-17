@@ -9,7 +9,9 @@ public:
 	Player();
 	virtual ~Player();
 
-	void Update(float _fDeltaTime);
+	void Update(float _fDeltaTime) override;
+
+	bool IsFinished() override { return false; };
 
 protected:
 	float m_fYVelocity;

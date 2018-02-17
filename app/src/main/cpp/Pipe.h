@@ -11,6 +11,8 @@ public:
 
 	void Update(float _fDeltaTime) override;
 
+	bool IsFinished() override;
+
 protected:
 	const static float k_fPipeSpeed;
 };

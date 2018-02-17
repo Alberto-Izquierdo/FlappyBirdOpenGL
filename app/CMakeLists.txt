@@ -22,6 +22,7 @@ add_library( # Sets the name of the library.
 			 src/main/cpp/Entity.cpp
 			 src/main/cpp/Player.cpp
 			 src/main/cpp/Pipe.cpp
+			 src/main/cpp/Constants.cpp
              )
 
 # Searches for a specified prebuilt library and stores the path as a
