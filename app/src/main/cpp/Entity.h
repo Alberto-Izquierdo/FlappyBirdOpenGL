@@ -11,15 +11,15 @@ public:
 
 	float GetX() const { return m_fX; };
 	float GetY() const { return m_fY; };
-	int GetWidht() const { return m_iWidth; };
-	int GetHeight() const { return m_iHeight; };
-	unsigned char* GetColor() { return m_Color; };
+	float GetWidht() const { return m_fWidth; };
+	float GetHeight() const { return m_fHeight; };
+	float* GetColor() { return m_Color; };
 
 protected:
 	float m_fX, m_fY;
-	int m_iWidth, m_iHeight;
+	float m_fWidth, m_fHeight;
 	float m_fRotation;
-	unsigned char m_Color[4];
+	float m_Color[4];
 };
 
 #endif

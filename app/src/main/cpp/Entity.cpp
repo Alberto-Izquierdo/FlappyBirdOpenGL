@@ -3,14 +3,14 @@
 Entity::Entity()
 	: m_fX(0.f)
 	, m_fY(0.f)
-	, m_iWidth(0)
-	, m_iHeight(0)
+	, m_fWidth(0)
+	, m_fHeight(0)
 	, m_fRotation(0.f)
 {
-    m_Color[0] = 0;
-    m_Color[1] = 0;
-    m_Color[2] = 0;
-    m_Color[3] = 255;
+    m_Color[0] = 0.f;
+    m_Color[1] = 0.f;
+    m_Color[2] = 0.f;
+    m_Color[3] = 1.f;
 }
 
 Entity::~Entity()

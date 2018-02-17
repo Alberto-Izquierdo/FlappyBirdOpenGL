@@ -13,8 +13,8 @@ enum GLShader
 
 struct Vertex
 {
-	int m_vPosition[2];
-	unsigned char m_vColor[4];
+	float m_vPosition[2];
+	float m_vColor[4];
 };
 
 class Entity;
@@ -28,19 +28,19 @@ public:
 	void Render(Entity* _pEntity);
 private:
 	unsigned int m_iProgram;
-	unsigned int m_iPosAttrib;
-	unsigned int m_iColoAttrib;
-	unsigned int m_VAO;
+	int m_iPosAttribute;
+	int m_iColorAttribute;
+	int m_iPosUniform;
+	int m_iColorUniform;
 	unsigned int m_VBO;
-	unsigned int m_EBO;
-	Vertex QUAD[4];
-	unsigned int m_vIndices[6];
+	Vertex m_Rectangle[6];
 
 	unsigned int CreateShader(const char* _pSource, GLShader _eShaderType);
 	void CreateProgram(unsigned int _iVertexShader, unsigned int _iFragmentShader);
 	void InitBuffers();
 	void DeleteBuffers();
-	void InitAttribPointers();
+	void GetAttribLocations();
+	void FillDefaultRectangle();
 };
 
 

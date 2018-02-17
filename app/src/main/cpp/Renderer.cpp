@@ -7,25 +7,21 @@
 #include <stdlib.h>
 #include <GLES3/gl3.h>
 #include <android/log.h>
+#include "Entity.h"
 
 Renderer::Renderer()
 {
-    m_vIndices[0] = 0;
-    m_vIndices[1] = 1;
-    m_vIndices[2] = 2;
-    m_vIndices[3] = 2;
-    m_vIndices[4] = 3;
-    m_vIndices[5] = 0;
-
+	FillDefaultRectangle();
 	const char* VertexSource =
-		"#version 300 es\n"
-		"layout (location = 0) in vec2 aPos;\n"
-		"layout (location = 1) in vec4 aColor;\n"
-		"out vec4 vertexColor;\n"
+        "attribute vec2 aPos;\n"
+		"attribute vec4 aColor;\n"
+		"uniform vec2 uPos;\n"
+		"uniform vec4 uColor;\n"
+		"varying vec4 vertexColor;\n"
 		"void main () {\n"
 			"gl_Position = vec4(aPos, 0.0, 1.0);\n"
 			"vertexColor = aColor;\n"
-		"}\n";
+		"}\n\0";
 
 	GLuint vertexShader = CreateShader(VertexSource, GLShader::VERTEX);
 
@@ -35,11 +31,10 @@ Renderer::Renderer()
 	}
 
 	const char* FragmentSource =
-		"#version 300 es\n"
-		"in vec4 vertexColor;\n"
-		"out vec4 fragColor;\n"
+        "precision mediump float;\n"
+		"varying vec4 vertexColor;\n"
 		"void main () {\n"
-			"fragColor = vertexColor;\n"
+			"gl_FragColor = vertexColor;\n"
 		"}\n\0";
 
 	GLuint fragmentShader = CreateShader(FragmentSource, GLShader::FRAGMENT);
@@ -51,8 +46,8 @@ Renderer::Renderer()
 	}
 
 	CreateProgram(vertexShader, fragmentShader);
+	GetAttribLocations();
 	InitBuffers();
-	InitAttribPointers();
 }
 
 Renderer::~Renderer()
@@ -65,11 +60,22 @@ void Renderer::PreRender()
 {
     glClearColor(0.678431373f, 0.847058824f, 0.901960784f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(m_iProgram);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	glVertexAttribPointer(m_iPosAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	glVertexAttribPointer(m_iColorAttribute, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(float)));
+	glEnableVertexAttribArray(m_iPosAttribute);
+	glEnableVertexAttribArray(m_iColorAttribute);
+
+	GLint err = glGetError();
+	if (err != GL_NO_ERROR) {
+		__android_log_print(ANDROID_LOG_ERROR, "CREA", "Error drawing: %i", err);
+	}
 }
 
 void Renderer::Render(Entity* _pEntity)
 {
-	
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 unsigned int Renderer::CreateShader(const char* _pSource, GLShader _eShaderType)
@@ -136,27 +142,32 @@ void Renderer::InitBuffers()
 {
 	glGenBuffers(1, &m_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD), &QUAD[0], GL_STATIC_DRAW);
-
-	glGenBuffers(1, &m_VAO);
-	glBindVertexArray(m_VAO);
-
-	glGenBuffers(1, &m_EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(m_vIndices), m_vIndices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(m_Rectangle), &m_Rectangle[0], GL_DYNAMIC_DRAW);
 }
 
 void Renderer::DeleteBuffers()
 {
-	glDeleteVertexArrays(1, &m_VAO);
 	glDeleteBuffers(1, &m_VBO);
-	glDeleteBuffers(1, &m_EBO);
 }
 
-void Renderer::InitAttribPointers()
+void Renderer::GetAttribLocations()
 {
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(Vertex), (void*)(2*sizeof(float)));
-	glEnableVertexAttribArray(1);
+	m_iPosAttribute = glGetAttribLocation(m_iProgram, "aPos");
+    m_iColorAttribute = glGetAttribLocation(m_iProgram, "aColor");
+}
+
+void Renderer::FillDefaultRectangle()
+{
+	float xOffsets [6] = {0.f, 1.f, 1.f, 0.f, 1.f, 0.f};
+	float yOffsets [6] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f};
+
+	for (int i = 0; i < 6; ++i)
+	{
+		m_Rectangle[i].m_vPosition[0] = -0.5f + xOffsets[i];
+		m_Rectangle[i].m_vPosition[1] = -0.5f + yOffsets[i];
+		m_Rectangle[i].m_vColor[0] = 1.f;
+		m_Rectangle[i].m_vColor[1] = 1.f;
+		m_Rectangle[i].m_vColor[2] = 1.f;
+		m_Rectangle[i].m_vColor[3] = 1.f;
+	}
 }
