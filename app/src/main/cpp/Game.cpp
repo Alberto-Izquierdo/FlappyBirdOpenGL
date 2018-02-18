@@ -7,15 +7,18 @@
 #include "Pipe.h"
 #include "Renderer.h"
 #include "PipeFactory.h"
+#include "StateMachineGame.h"
 #include <jni.h>
 #include <time.h>
 #include <cstdlib>
 
 Game::Game()
-        : m_iLastFrameTimeMiliSecs(0)
+	: m_iLastFrameTimeMiliSecs(0)
+	, m_pPlayer(nullptr)
 {
+	m_pStateMachine = new StateMachineGame();
+	m_pStateMachine->Init(this, StateID::INIT);
     m_pRenderer = new Renderer();
-	m_pPlayer = new Player();
 	m_pPipeFactory = new PipeFactory(&m_vEntities);
 }
 
@@ -42,25 +45,9 @@ void Game::Update()
     if (m_iLastFrameTimeMiliSecs > 0)
     {
         float fDeltaTime = (float)(iNowMiliSecs - m_iLastFrameTimeMiliSecs) / 1000.f;
+		m_fTimeInCurrentState += fDeltaTime;
 
-        // Update the entities in the game
-		m_pPlayer->Update(fDeltaTime);
-
-        for (int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
-        {
-			Entity* pEntity = m_vEntities.at(i);
-            pEntity->Update(fDeltaTime);
-
-			if (pEntity->IsFinished())
-			{
-				delete pEntity;
-				m_vEntities.erase(m_vEntities.begin() + i);
-				--i;
-				--iSize;
-			}
-        }
-
-		m_pPipeFactory->Update(fDeltaTime);
+		m_pStateMachine->Update(this, fDeltaTime);
 
 		Render();
     }
@@ -83,7 +70,49 @@ void Game::Render()
 
 void Game::HandleScreenTouched()
 {
-	m_pPlayer->ScreenTouched();
+	m_pStateMachine->OnScreenTouched(this);
+}
+
+void Game::InitPlayer()
+{
+	if (m_pPlayer == nullptr)
+	{
+		m_pPlayer = new Player();
+	}
+
+	m_pPlayer->ResetPosition();
+}
+
+void Game::Jump()
+{
+	if (m_pPlayer != nullptr)
+	{
+		m_pPlayer->Jump();
+	}
+}
+
+void Game::UpdatePipes(float _fDelta)
+{
+	for (int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
+	{
+		Entity* pEntity = m_vEntities.at(i);
+		pEntity->Update(_fDelta);
+
+		if (pEntity->IsFinished())
+		{
+			delete pEntity;
+			m_vEntities.erase(m_vEntities.begin() + i);
+			--i;
+			--iSize;
+		}
+	}
+
+	m_pPipeFactory->Update(_fDelta);
+}
+
+void Game::UpdatePlayer(float _fDelta)
+{
+	m_pPlayer->Update(_fDelta);
 }
 
 static Game* pGame = NULL;
