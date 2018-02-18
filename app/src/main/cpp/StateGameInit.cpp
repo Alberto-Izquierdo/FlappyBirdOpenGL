@@ -14,6 +14,7 @@ StateGameInit::~StateGameInit()
 void StateGameInit::OnEnter(Game* _pGame)
 {
 	_pGame->InitPlayer();
+	_pGame->ClearPipes();
 }
 
 void StateGameInit::OnExit(Game* _pGame)

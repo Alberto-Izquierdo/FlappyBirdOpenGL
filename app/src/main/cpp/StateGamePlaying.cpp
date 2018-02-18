@@ -30,4 +30,9 @@ void StateGamePlaying::Update(Game* _pGame, float _fDeltaTime)
 {
 	_pGame->UpdatePlayer(_fDeltaTime);
 	_pGame->UpdatePipes(_fDeltaTime);
+
+	if (_pGame->IsPlayerCollidingWithPipes())
+	{
+		_pGame->GetStateMachine()->SwitchState(StateID::OVER);
+	}
 }

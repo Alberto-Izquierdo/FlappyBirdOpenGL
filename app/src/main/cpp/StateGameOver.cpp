@@ -23,7 +23,10 @@ void StateGameOver::OnExit(Game* _pGame)
 
 void StateGameOver::OnScreenTouched(Game* _pGame)
 {
-	_pGame->GetStateMachine()->SwitchState(StateID::INIT);
+	if (_pGame->GetTimeInCurrentState() > 2.f)
+	{
+		_pGame->GetStateMachine()->SwitchState(StateID::INIT);
+	}
 }
 
 void StateGameOver::Update(Game* _pGame, float _fDeltaTime)

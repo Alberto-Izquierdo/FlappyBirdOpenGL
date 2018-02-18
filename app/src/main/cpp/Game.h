@@ -12,6 +12,7 @@ class Entity;
 class Player;
 class PipeFactory;
 class StateMachineGame;
+class CollisionDetectionManager;
 
 class Game {
 public:
@@ -24,14 +25,17 @@ public:
 	void HandleScreenTouched();
 	StateMachineGame* GetStateMachine() { return m_pStateMachine; };
 	void InitPlayer();
+	void ClearPipes();
 	void Jump();
-	float GetTimeInCurrentState();
+	float GetTimeInCurrentState() { return m_fTimeInCurrentState; };
 	void ResetTimeInCurrentState() { m_fTimeInCurrentState = 0;};
+	bool IsPlayerCollidingWithPipes();
 private:
 	StateMachineGame* m_pStateMachine;
 	unsigned int m_iLastFrameTimeMiliSecs;
 	float m_fTimeInCurrentState;
 	Renderer* m_pRenderer;
+	CollisionDetectionManager* m_pCollisionManager;
 	Player* m_pPlayer;
 	std::vector<Entity*> m_vEntities;
 	PipeFactory* m_pPipeFactory;

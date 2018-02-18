@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "PipeFactory.h"
 #include "StateMachineGame.h"
+#include "CollisionDetectionManager.h"
 #include <jni.h>
 #include <time.h>
 #include <cstdlib>
@@ -20,6 +21,7 @@ Game::Game()
 	m_pStateMachine->Init(this, StateID::INIT);
     m_pRenderer = new Renderer();
 	m_pPipeFactory = new PipeFactory(&m_vEntities);
+	m_pCollisionManager = new CollisionDetectionManager();
 }
 
 Game::~Game()
@@ -27,13 +29,9 @@ Game::~Game()
 	delete m_pRenderer;
 	delete m_pPlayer;
 	delete m_pPipeFactory;
-
-	for (Entity* pEntity : m_vEntities)
-	{
-		delete pEntity;
-	}
-
-	m_vEntities.clear();
+	delete m_pCollisionManager;
+	
+	ClearPipes();
 }
 
 void Game::Update()
@@ -83,12 +81,27 @@ void Game::InitPlayer()
 	m_pPlayer->ResetPosition();
 }
 
+void Game::ClearPipes()
+{
+	for (Entity* pEntity : m_vEntities)
+	{
+		delete pEntity;
+	}
+
+	m_vEntities.clear();
+}
+
 void Game::Jump()
 {
 	if (m_pPlayer != nullptr)
 	{
 		m_pPlayer->Jump();
 	}
+}
+
+bool Game::IsPlayerCollidingWithPipes()
+{
+	return m_pCollisionManager->IsPlayerCollidingWithPipes(m_pPlayer, m_vEntities);
 }
 
 void Game::UpdatePipes(float _fDelta)
