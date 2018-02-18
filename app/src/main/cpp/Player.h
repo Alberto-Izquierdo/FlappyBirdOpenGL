@@ -13,9 +13,12 @@ public:
 
 	bool IsFinished() override { return false; };
 
+	void ScreenTouched();
+
 protected:
 	float m_fYVelocity;
 	const static float k_fGravity;
+	const static float k_fJumpVelocity;
 };
 
 #endif

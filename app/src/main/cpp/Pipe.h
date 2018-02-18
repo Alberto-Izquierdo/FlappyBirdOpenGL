@@ -6,7 +6,7 @@
 class Pipe : public Entity
 {
 public:
-	Pipe();
+	Pipe(float _fY, bool _bBottom);
 	virtual ~Pipe();
 
 	void Update(float _fDeltaTime) override;
@@ -14,6 +14,7 @@ public:
 	bool IsFinished() override;
 
 protected:
+	float m_bIsBottom;
 	const static float k_fPipeSpeed;
 };
 

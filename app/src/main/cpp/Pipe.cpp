@@ -1,14 +1,15 @@
 #include "Pipe.h"
 #include "Constants.h"
 
-Pipe::Pipe()
+Pipe::Pipe(float _fY, bool _bBottom)
 	: Entity()
+	, m_bIsBottom(_bBottom)
 {
 	m_Color[1] = 1.f;
-	m_fWidth = 600.f;
-	m_fHeight = 1000.f;
+	m_fWidth = 200.f;
+	m_fHeight = Constants::k_fWorldHeight;
 	m_fX = Constants::k_fWorldWidth;
-	m_fY = 300.f;
+	m_fY = _fY;
 }
 
 Pipe::~Pipe()
@@ -30,4 +31,4 @@ bool Pipe::IsFinished()
 	return false;
 }
 
-const float Pipe::k_fPipeSpeed = -100.f;
+const float Pipe::k_fPipeSpeed = -300.f;

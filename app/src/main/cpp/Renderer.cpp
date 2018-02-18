@@ -77,15 +77,9 @@ void Renderer::PreRender()
 
 void Renderer::Render(Entity* _pEntity)
 {
-	float width = _pEntity->GetWidht();
-	float height = _pEntity->GetHeight();
-	float fScale[2];
-	fScale[0] = width / k_fUnitX;
-	fScale[1] = height / k_fUnitY;
+	float fScale[2] = {_pEntity->GetWidht() / k_fUnitX * 2, _pEntity->GetHeight() / k_fUnitY * 2};
 	glUniform2f(m_iScaleUniform, fScale[0], fScale[1]);
-	float fPosition[2];
-	fPosition[0] = (_pEntity->GetX() + width / 2) / Constants::k_fWorldWidth * 2.f - 1.f;
-	fPosition[1] = (_pEntity->GetY() + height / 2) / Constants::k_fWorldHeight * 2.f - 1.f;
+	float fPosition[2] = {_pEntity->GetX() / Constants::k_fWorldWidth * 2.f - 1.f, _pEntity->GetY() / Constants::k_fWorldHeight * 2.f - 1.f};
 	glUniform2f(m_iPosUniform, fPosition[0], fPosition[1]);
 	float* color = _pEntity->GetColor();
 	glUniform4f(m_iColorUniform, color[0], color[1], color[2], color[3]);
@@ -174,15 +168,15 @@ void Renderer::GetAttribAndUniformLocations()
 
 void Renderer::FillDefaultRectangle()
 {
-	float unitX = k_fUnitX / Constants::k_fWorldWidth / 2.f;
-	float unitY = k_fUnitY / Constants::k_fWorldHeight / 2.f;
+	float unitX = k_fUnitX / Constants::k_fWorldWidth;
+	float unitY = k_fUnitY / Constants::k_fWorldHeight;
 	float xOffsets [6] = {0.f, unitX, unitX, 0.f, unitX, 0.f};
 	float yOffsets [6] = {0.f, 0.f, unitY, 0.f, unitY, unitY};
 
 	for (int i = 0; i < 6; ++i)
 	{
-		m_Rectangle[i].m_vPosition[0] = -unitX + xOffsets[i];
-		m_Rectangle[i].m_vPosition[1] = -unitY + yOffsets[i];
+		m_Rectangle[i].m_vPosition[0] = xOffsets[i];
+		m_Rectangle[i].m_vPosition[1] = yOffsets[i];
 	}
 }
 

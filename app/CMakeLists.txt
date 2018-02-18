@@ -22,6 +22,7 @@ add_library( # Sets the name of the library.
 			 src/main/cpp/Entity.cpp
 			 src/main/cpp/Player.cpp
 			 src/main/cpp/Pipe.cpp
+			 src/main/cpp/PipeFactory.cpp
 			 src/main/cpp/Constants.cpp
              )
 

@@ -6,15 +6,31 @@
 #include "Player.h"
 #include "Pipe.h"
 #include "Renderer.h"
+#include "PipeFactory.h"
 #include <jni.h>
 #include <time.h>
+#include <cstdlib>
 
 Game::Game()
         : m_iLastFrameTimeMiliSecs(0)
 {
     m_pRenderer = new Renderer();
 	m_pPlayer = new Player();
-	m_vEntities.push_back(new Pipe());
+	m_pPipeFactory = new PipeFactory(&m_vEntities);
+}
+
+Game::~Game()
+{
+	delete m_pRenderer;
+	delete m_pPlayer;
+	delete m_pPipeFactory;
+
+	for (Entity* pEntity : m_vEntities)
+	{
+		delete pEntity;
+	}
+
+	m_vEntities.clear();
 }
 
 void Game::Update()
@@ -44,6 +60,8 @@ void Game::Update()
 			}
         }
 
+		m_pPipeFactory->Update(fDeltaTime);
+
 		Render();
     }
 
@@ -63,6 +81,11 @@ void Game::Render()
 	m_pRenderer->Render(m_pPlayer);
 }
 
+void Game::HandleScreenTouched()
+{
+	m_pPlayer->ScreenTouched();
+}
+
 static Game* pGame = NULL;
 
 extern "C" {
@@ -74,6 +97,8 @@ extern "C" {
 
 JNIEXPORT void JNICALL Java_com_example_project_game_GameLib_init(JNIEnv* env, jobject obj)
 {
+	std::srand(time(nullptr));
+
 	if (pGame != NULL)
 	{
 		delete pGame;
@@ -91,5 +116,6 @@ JNIEXPORT void JNICALL Java_com_example_project_game_GameLib_step(JNIEnv* env, j
 }
 JNIEXPORT bool JNICALL Java_com_example_project_game_GameLib_touch(JNIEnv* env, jobject obj)
 {
+	pGame->HandleScreenTouched();
 	return true;
 }

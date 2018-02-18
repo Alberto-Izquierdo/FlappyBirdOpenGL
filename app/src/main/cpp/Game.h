@@ -9,17 +9,22 @@
 
 class Renderer;
 class Entity;
+class Player;
+class PipeFactory;
 
 class Game {
 public:
     Game();
+	~Game();
 	void Update();
 	void Render();
+	void HandleScreenTouched();
 private:
 	unsigned int m_iLastFrameTimeMiliSecs;
 	Renderer* m_pRenderer;
-	Entity* m_pPlayer;
+	Player* m_pPlayer;
 	std::vector<Entity*> m_vEntities;
+	PipeFactory* m_pPipeFactory;
 };
 
 
