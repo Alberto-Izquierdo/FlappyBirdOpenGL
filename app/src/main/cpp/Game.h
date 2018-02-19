@@ -25,11 +25,13 @@ public:
 	void HandleScreenTouched();
 	StateMachineGame* GetStateMachine() { return m_pStateMachine; };
 	void InitPlayer();
+
 	void ClearPipes();
 	void Jump();
 	float GetTimeInCurrentState() { return m_fTimeInCurrentState; };
 	void ResetTimeInCurrentState() { m_fTimeInCurrentState = 0;};
 	bool IsPlayerCollidingWithPipes();
+	bool IsPlayerOutOfTheScreen();
 private:
 	StateMachineGame* m_pStateMachine;
 	unsigned int m_iLastFrameTimeMiliSecs;

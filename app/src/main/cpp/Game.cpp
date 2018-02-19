@@ -9,9 +9,11 @@
 #include "PipeFactory.h"
 #include "StateMachineGame.h"
 #include "CollisionDetectionManager.h"
+#include "Constants.h"
 #include <jni.h>
 #include <time.h>
 #include <cstdlib>
+
 
 Game::Game()
 	: m_iLastFrameTimeMiliSecs(0)
@@ -102,6 +104,19 @@ void Game::Jump()
 bool Game::IsPlayerCollidingWithPipes()
 {
 	return m_pCollisionManager->IsPlayerCollidingWithPipes(m_pPlayer, m_vEntities);
+}
+
+bool Game::IsPlayerOutOfTheScreen()
+{
+	float fY = m_pPlayer->GetY();
+	float fHeight = m_pPlayer->GetHeight();
+
+	if (fY < 0 || fY + fHeight > Constants::k_fWorldHeight)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 void Game::UpdatePipes(float _fDelta)
