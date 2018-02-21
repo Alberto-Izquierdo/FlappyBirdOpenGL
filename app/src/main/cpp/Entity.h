@@ -14,6 +14,7 @@ public:
 	float GetWidht() const { return m_fWidth; };
 	float GetHeight() const { return m_fHeight; };
 	float* GetColor() { return m_Color; };
+	float GetRotation() const { return m_fRotation; };
 
 	virtual bool IsFinished() = 0;
 

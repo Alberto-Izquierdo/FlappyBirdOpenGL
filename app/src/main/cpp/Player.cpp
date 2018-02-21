@@ -19,6 +19,7 @@ void Player::Update(float _fDeltaTime)
 {
 	m_fYVelocity += k_fGravity * _fDeltaTime;
 	m_fY += m_fYVelocity;
+	m_fRotation += _fDeltaTime;
 }
 
 void Player::Jump()

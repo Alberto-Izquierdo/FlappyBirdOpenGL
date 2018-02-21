@@ -30,6 +30,7 @@ add_library( # Sets the name of the library.
 			 src/main/cpp/StateGamePlaying.cpp
 			 src/main/cpp/StateGameOver.cpp
 			 src/main/cpp/CollisionDetectionManager.cpp
+			 src/main/cpp/Matrix4.cpp
              )
 
 # Searches for a specified prebuilt library and stores the path as a

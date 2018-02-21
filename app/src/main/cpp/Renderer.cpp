@@ -5,6 +5,7 @@
 #include "Renderer.h"
 #include "Entity.h"
 #include "Constants.h"
+#include "Matrix4.h"
 
 #include <EGL/egl.h>
 #include <stdlib.h>
@@ -19,10 +20,14 @@ Renderer::Renderer()
 		"uniform vec2 uPos;\n"
 		"uniform vec2 uScale;\n"
 		"uniform vec4 uColor;\n"
+		"uniform mat4 uTransformationMatrix;\n"
 		"varying vec4 vertexColor;\n"
 		"vec2 finalPosition;\n"
+		"vec4 vPosition;\n"
 		"void main () {\n"
-			"finalPosition = aPos * uScale + uPos;\n"
+			"vPosition = uTransformationMatrix * vec4(aPos, 0, 1);\n"
+			"finalPosition = vec2(vPosition.x, vPosition.y);\n"
+			"finalPosition = finalPosition * uScale + uPos;\n"
 			"gl_Position = vec4(finalPosition, 0.0, 1.0);\n"
 			"vertexColor = uColor;\n"
 		"}\n\0";
@@ -69,9 +74,10 @@ void Renderer::PreRender()
 	glVertexAttribPointer(m_iPosAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 	glEnableVertexAttribArray(m_iPosAttribute);
 
+
 	GLint err = glGetError();
 	if (err != GL_NO_ERROR) {
-		__android_log_print(ANDROID_LOG_ERROR, "CREA", "Error drawing: %i", err);
+		//__android_log_print(ANDROID_LOG_ERROR, "CREA", "Error drawing: %i", err);
 	}
 }
 
@@ -83,6 +89,8 @@ void Renderer::Render(Entity* _pEntity)
 	glUniform2f(m_iPosUniform, fPosition[0], fPosition[1]);
 	float* color = _pEntity->GetColor();
 	glUniform4f(m_iColorUniform, color[0], color[1], color[2], color[3]);
+	Matrix4 matrix = Matrix4::RotationZ(_pEntity->GetRotation());
+	glUniformMatrix4fv(m_iTransformationMatrix, 1, GL_FALSE, reinterpret_cast<float*>((&matrix)));
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -164,6 +172,7 @@ void Renderer::GetAttribAndUniformLocations()
     m_iPosUniform = glGetUniformLocation(m_iProgram, "uPos");
     m_iScaleUniform = glGetUniformLocation(m_iProgram, "uScale");
     m_iColorUniform = glGetUniformLocation(m_iProgram, "uColor");
+    m_iTransformationMatrix = glGetUniformLocation(m_iProgram, "uTransformationMatrix");
 }
 
 void Renderer::FillDefaultRectangle()

@@ -32,6 +32,7 @@ private:
 	int m_iPosUniform;
 	int m_iScaleUniform;
 	int m_iColorUniform;
+	int m_iTransformationMatrix;
 	unsigned int m_VBO;
 	Vertex m_Rectangle[6];
 
