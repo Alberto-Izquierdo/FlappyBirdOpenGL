@@ -22,6 +22,9 @@ protected:
 	const static float k_fGravity;
 	const static float k_fJumpVelocity;
 	const static float k_fInitialPosition;
+	const static float k_fLimitRotation;
+
+	float GetDesiredRotation();
 };
 
 #endif

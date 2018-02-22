@@ -84,7 +84,7 @@ void Renderer::Render(Entity* _pEntity)
 	glUniform4f(m_iPosUniform, fPosition[0], fPosition[1], 0.f, 0.f);
 	float* color = _pEntity->GetColor();
 	glUniform4f(m_iColorUniform, color[0], color[1], color[2], color[3]);
-	float fRotation = _pEntity->GetRotation();
+	float fRotation = _pEntity->GetRotation() * 2.f * 3.1415f / 360.f;
 	Matrix4 matrix = GetWorldTransformationToView(fDimensions[0], fDimensions[1], fRotation);
 	glUniformMatrix4fv(m_iTransformationMatrix, 1, GL_FALSE, reinterpret_cast<float*>((&matrix)));
     glDrawArrays(GL_TRIANGLES, 0, 6);
