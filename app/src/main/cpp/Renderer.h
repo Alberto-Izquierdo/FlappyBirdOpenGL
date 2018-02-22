@@ -30,14 +30,10 @@ private:
 	unsigned int m_iProgram;
 	int m_iPosAttribute;
 	int m_iPosUniform;
-	int m_iScaleUniform;
 	int m_iColorUniform;
 	int m_iTransformationMatrix;
 	unsigned int m_VBO;
 	Vertex m_Rectangle[6];
-
-	static const float k_fUnitX;
-	static const float k_fUnitY;
 
 	unsigned int CreateShader(const char* _pSource, GLShader _eShaderType);
 	void CreateProgram(unsigned int _iVertexShader, unsigned int _iFragmentShader);
@@ -46,8 +42,7 @@ private:
 	void GetAttribAndUniformLocations();
 	void FillDefaultRectangle();
 
-
-	Matrix4& GetTransformationWorldToView();
+	Matrix4 GetWorldTransformationToView(float _fScaleX, float _fScaleY, float _fRotation);
 };
 
 

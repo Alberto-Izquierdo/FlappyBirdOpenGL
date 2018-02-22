@@ -8,7 +8,7 @@ Pipe::Pipe(float _fY, bool _bBottom)
 	m_Color[1] = 1.f;
 	m_fWidth = 200.f;
 	m_fHeight = Constants::k_fWorldHeight;
-	m_fX = Constants::k_fWorldWidth;
+	m_fX = Constants::k_fWorldWidth + m_fWidth / 2.f;
 	m_fY = _fY;
 }
 

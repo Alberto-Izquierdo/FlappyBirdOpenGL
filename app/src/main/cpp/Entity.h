@@ -11,7 +11,7 @@ public:
 
 	float GetX() const { return m_fX; };
 	float GetY() const { return m_fY; };
-	float GetWidht() const { return m_fWidth; };
+	float GetWidth() const { return m_fWidth; };
 	float GetHeight() const { return m_fHeight; };
 	float* GetColor() { return m_Color; };
 	float GetRotation() const { return m_fRotation; };

@@ -22,9 +22,9 @@ void PipeFactory::Update(float _fDelta)
 		// Create top and bot pipes
 		int iPipesPosition = (std::rand() % (int)(Constants::k_fWorldHeight - (k_fMinimumDistanceToWindowBorder * 2 + k_fYDistanceBetweenPipes / 2))) + k_fMinimumDistanceToWindowBorder;
 
-		float fPipePosition = iPipesPosition - k_fYDistanceBetweenPipes / 2 - Constants::k_fWorldHeight;
+		float fPipePosition = iPipesPosition - k_fYDistanceBetweenPipes / 2 - Constants::k_fWorldHeight / 2;
 		m_vEntities->push_back(new Pipe(fPipePosition, true));
-		fPipePosition = iPipesPosition + k_fYDistanceBetweenPipes / 2;
+		fPipePosition = iPipesPosition + k_fYDistanceBetweenPipes / 2 + Constants::k_fWorldHeight / 2;
 		m_vEntities->push_back(new Pipe(fPipePosition, false));
 
 		m_fTimeSinceLastPipeSpawned = k_fTimeBetweenPipes;

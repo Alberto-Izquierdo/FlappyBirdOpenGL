@@ -17,18 +17,14 @@ Renderer::Renderer()
 	FillDefaultRectangle();
 	const char* VertexSource =
         "attribute vec2 aPos;\n"
-		"uniform vec2 uPos;\n"
-		"uniform vec2 uScale;\n"
-		"uniform vec4 uColor;\n"
 		"uniform mat4 uTransformationMatrix;\n"
+		"uniform vec4 uPos;\n"
+		"uniform vec4 uColor;\n"
 		"varying vec4 vertexColor;\n"
 		"vec2 finalPosition;\n"
 		"vec4 vPosition;\n"
 		"void main () {\n"
-			"vPosition = uTransformationMatrix * vec4(aPos, 0, 1);\n"
-			"finalPosition = vec2(vPosition.x, vPosition.y);\n"
-			"finalPosition = finalPosition * uScale + uPos;\n"
-			"gl_Position = vec4(finalPosition, 0.0, 1.0);\n"
+			"gl_Position = uTransformationMatrix * vec4(aPos, 0.0, 1.0) + uPos;\n"
 			"vertexColor = uColor;\n"
 		"}\n\0";
 
@@ -77,19 +73,19 @@ void Renderer::PreRender()
 
 	GLint err = glGetError();
 	if (err != GL_NO_ERROR) {
-		//__android_log_print(ANDROID_LOG_ERROR, "CREA", "Error drawing: %i", err);
+		__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error drawing: %i", err);
 	}
 }
 
 void Renderer::Render(Entity* _pEntity)
 {
-	float fScale[2] = {_pEntity->GetWidht() / k_fUnitX * 2, _pEntity->GetHeight() / k_fUnitY * 2};
-	glUniform2f(m_iScaleUniform, fScale[0], fScale[1]);
+	float fDimensions[2] = {_pEntity->GetWidth(), _pEntity->GetHeight()};
 	float fPosition[2] = {_pEntity->GetX() / Constants::k_fWorldWidth * 2.f - 1.f, _pEntity->GetY() / Constants::k_fWorldHeight * 2.f - 1.f};
-	glUniform2f(m_iPosUniform, fPosition[0], fPosition[1]);
+	glUniform4f(m_iPosUniform, fPosition[0], fPosition[1], 0.f, 0.f);
 	float* color = _pEntity->GetColor();
 	glUniform4f(m_iColorUniform, color[0], color[1], color[2], color[3]);
-	Matrix4 matrix = Matrix4::RotationZ(_pEntity->GetRotation());
+	float fRotation = _pEntity->GetRotation();
+	Matrix4 matrix = GetWorldTransformationToView(fDimensions[0], fDimensions[1], fRotation);
 	glUniformMatrix4fv(m_iTransformationMatrix, 1, GL_FALSE, reinterpret_cast<float*>((&matrix)));
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
@@ -169,18 +165,15 @@ void Renderer::DeleteBuffers()
 void Renderer::GetAttribAndUniformLocations()
 {
 	m_iPosAttribute = glGetAttribLocation(m_iProgram, "aPos");
-    m_iPosUniform = glGetUniformLocation(m_iProgram, "uPos");
-    m_iScaleUniform = glGetUniformLocation(m_iProgram, "uScale");
     m_iColorUniform = glGetUniformLocation(m_iProgram, "uColor");
+    m_iPosUniform = glGetUniformLocation(m_iProgram, "uPos");
     m_iTransformationMatrix = glGetUniformLocation(m_iProgram, "uTransformationMatrix");
 }
 
 void Renderer::FillDefaultRectangle()
 {
-	float unitX = k_fUnitX / Constants::k_fWorldWidth;
-	float unitY = k_fUnitY / Constants::k_fWorldHeight;
-	float xOffsets [6] = {0.f, unitX, unitX, 0.f, unitX, 0.f};
-	float yOffsets [6] = {0.f, 0.f, unitY, 0.f, unitY, unitY};
+	float xOffsets [6] = {-0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f};
+	float yOffsets [6] = {-0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f};
 
 	for (int i = 0; i < 6; ++i)
 	{
@@ -189,12 +182,10 @@ void Renderer::FillDefaultRectangle()
 	}
 }
 
-Matrix4& Renderer::GetTransformationWorldToView()
+Matrix4 Renderer::GetWorldTransformationToView(float _fWidth, float _fHeight, float _fRotation)
 {
-	//TODO: calculate transformation
-	Matrix4 result = Matrix4();
+	Matrix4 scale = Matrix4::Scale((_fWidth * 2.f / Constants::k_fWorldWidth), (_fHeight * 2.f / Constants::k_fWorldHeight), 0.f);
+	Matrix4 rotation = Matrix4::RotationZ(_fRotation);
+	Matrix4 result = rotation * scale;
 	return result;
 }
-
-const float Renderer::k_fUnitX = 300.f;
-const float Renderer::k_fUnitY = 300.f;

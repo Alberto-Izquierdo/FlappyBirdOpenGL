@@ -24,10 +24,10 @@ bool CollisionDetectionManager::IsPlayerCollidingWithPipes(Entity* _pPlayer, std
 
 vec2 CollisionDetectionManager::GetClosestPositionToPlayer(Entity* _pPipe, vec2& _vPlayerCenter)
 {
-	float fPipeX = _pPipe->GetX();
-	float fPipeY = _pPipe->GetY();
-	float fPipeWidth = _pPipe->GetWidht();
+	float fPipeWidth = _pPipe->GetWidth();
 	float fPipeHeight = _pPipe->GetHeight();
+	float fPipeX = _pPipe->GetX() - fPipeWidth / 2.f;
+	float fPipeY = _pPipe->GetY() - fPipeHeight / 2.f;
 
 	if (_vPlayerCenter.Y > fPipeY && _vPlayerCenter.Y < fPipeY + fPipeHeight)
 	{
@@ -79,9 +79,9 @@ bool CollisionDetectionManager::IsPlayerCollidingWithPipe(Entity* _pPipe, Entity
 {
 	float fPlayerX = _pPlayer->GetX();
 	float fPlayerY = _pPlayer->GetY();
-	float fPlayerWidth = _pPlayer->GetWidht();
+	float fPlayerWidth = _pPlayer->GetWidth();
 	float fPlayerHeight = _pPlayer->GetHeight();
-	vec2 vPlayerCenter = {fPlayerX + fPlayerWidth / 2, fPlayerY + fPlayerHeight / 2};
+	vec2 vPlayerCenter = {fPlayerX, fPlayerY};
 
 	vec2 vClosestPositionToPlayer = GetClosestPositionToPlayer(_pPipe, vPlayerCenter);
 	vec2 vDistanceBetweenPipeAndPlayer = {vClosestPositionToPlayer.X - vPlayerCenter.X, vClosestPositionToPlayer.Y - vPlayerCenter.Y};
