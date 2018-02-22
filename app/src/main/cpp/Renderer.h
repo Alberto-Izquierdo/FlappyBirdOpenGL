@@ -17,6 +17,7 @@ struct Vertex
 };
 
 class Entity;
+class Matrix4;
 
 class Renderer {
 public:
@@ -28,7 +29,6 @@ public:
 private:
 	unsigned int m_iProgram;
 	int m_iPosAttribute;
-	int m_iColorAttribute;
 	int m_iPosUniform;
 	int m_iScaleUniform;
 	int m_iColorUniform;
@@ -45,6 +45,9 @@ private:
 	void DeleteBuffers();
 	void GetAttribAndUniformLocations();
 	void FillDefaultRectangle();
+
+
+	Matrix4& GetTransformationWorldToView();
 };
 
 

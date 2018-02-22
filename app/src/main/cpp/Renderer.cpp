@@ -189,5 +189,12 @@ void Renderer::FillDefaultRectangle()
 	}
 }
 
+Matrix4& Renderer::GetTransformationWorldToView()
+{
+	//TODO: calculate transformation
+	Matrix4 result = Matrix4();
+	return result;
+}
+
 const float Renderer::k_fUnitX = 300.f;
 const float Renderer::k_fUnitY = 300.f;
