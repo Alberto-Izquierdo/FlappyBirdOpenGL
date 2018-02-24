@@ -14,6 +14,9 @@
 #include <time.h>
 #include <cstdlib>
 
+// Variables to call to java functions from cpp
+static JNIEnv* pEnv = NULL;
+static jobject pObject = NULL;
 
 Game::Game()
 	: m_iLastFrameTimeMiliSecs(0)
@@ -143,6 +146,15 @@ void Game::UpdatePlayer(float _fDelta)
 	m_pPlayer->Update(_fDelta);
 }
 
+int Game::LoadImage(const char *_pFileName)
+{
+    jstring filename = pEnv->NewStringUTF(_pFileName);
+    jclass clazz = pEnv->FindClass("com/example/project/game/GameLib");
+    jmethodID methodID = pEnv->GetStaticMethodID(clazz, "LoadImage", "(Ljava/lang/String;)I;");
+    jint out = pEnv->CallStaticIntMethod(clazz, methodID, filename);
+	return out;
+}
+
 static Game* pGame = NULL;
 
 extern "C" {
@@ -160,6 +172,9 @@ JNIEXPORT void JNICALL Java_com_example_project_game_GameLib_init(JNIEnv* env, j
 	{
 		delete pGame;
 	}
+
+    pEnv = env;
+    pObject = obj;
 
 	pGame = new Game();
 }

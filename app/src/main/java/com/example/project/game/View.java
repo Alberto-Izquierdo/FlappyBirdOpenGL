@@ -1,5 +1,6 @@
 package com.example.project.game;
 
+import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.view.MotionEvent;
@@ -17,11 +18,12 @@ public class View extends GLSurfaceView {
         System.loadLibrary("game");
     }
 
-    public View(Context context) {
+    public View(Context context, Activity act) {
         super(context);
         setEGLConfigChooser(8, 8, 8, 0, 16, 0);
         setEGLContextClientVersion(2);
         setRenderer(new Renderer());
+        GameLib.SetTextureLoader(new TextureLoader(act));
     }
 
     private static class Renderer implements GLSurfaceView.Renderer{

@@ -10,7 +10,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mView = new View(getApplication());
+        mView = new View(getApplication(), this);
         setContentView(mView);
     }
 

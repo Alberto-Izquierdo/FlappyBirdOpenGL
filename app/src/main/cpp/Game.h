@@ -6,6 +6,7 @@
 #define GAME_GAME_H
 
 #include <vector>
+#include <cstdint>
 
 class Renderer;
 class Entity;
@@ -32,6 +33,8 @@ public:
 	void ResetTimeInCurrentState() { m_fTimeInCurrentState = 0;};
 	bool IsPlayerCollidingWithPipes();
 	bool IsPlayerOutOfTheScreen();
+
+    int LoadImage(const char* _pFileName);
 private:
 	StateMachineGame* m_pStateMachine;
 	unsigned int m_iLastFrameTimeMiliSecs;
