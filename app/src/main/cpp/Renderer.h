@@ -14,6 +14,7 @@ enum GLShader
 struct Vertex
 {
 	float m_vPosition[2];
+	float m_vTexCoord[2];
 };
 
 class Entity;
@@ -29,6 +30,7 @@ public:
 private:
 	unsigned int m_iProgram;
 	int m_iPosAttribute;
+	int m_iTexCoordAttribute;
 	int m_iPosUniform;
 	int m_iColorUniform;
 	int m_iTransformationMatrix;

@@ -28,6 +28,7 @@ Game::Game()
 	m_pPipeFactory = new PipeFactory(&m_vEntities);
 	m_pCollisionManager = new CollisionDetectionManager();
 	int iImageID = LoadImage("image.png");
+	int iImageID2 = LoadImage("image2.png");
 }
 
 Game::~Game()

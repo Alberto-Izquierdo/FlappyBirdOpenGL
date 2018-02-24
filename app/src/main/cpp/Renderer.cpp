@@ -17,15 +17,18 @@ Renderer::Renderer()
 	FillDefaultRectangle();
 	const char* VertexSource =
         "attribute vec2 aPos;\n"
+        "attribute vec2 aTexCoord;\n"
 		"uniform mat4 uTransformationMatrix;\n"
 		"uniform vec4 uPos;\n"
 		"uniform vec4 uColor;\n"
 		"varying vec4 vertexColor;\n"
+		"varying vec2 texCoord;\n"
 		"vec2 finalPosition;\n"
 		"vec4 vPosition;\n"
 		"void main () {\n"
 			"gl_Position = uTransformationMatrix * vec4(aPos, 0.0, 1.0) + uPos;\n"
 			"vertexColor = uColor;\n"
+			"texCoord = aTexCoord;\n"
 		"}\n\0";
 
 	GLuint vertexShader = CreateShader(VertexSource, GLShader::VERTEX);
@@ -38,6 +41,7 @@ Renderer::Renderer()
 	const char* FragmentSource =
         "precision mediump float;\n"
 		"varying vec4 vertexColor;\n"
+        "varying vec2 texCoord;\n"
 		"void main () {\n"
 			"gl_FragColor = vertexColor;\n"
 		"}\n\0";
@@ -67,13 +71,17 @@ void Renderer::PreRender()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(m_iProgram);
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+
 	glVertexAttribPointer(m_iPosAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 	glEnableVertexAttribArray(m_iPosAttribute);
+
+	glVertexAttribPointer(m_iTexCoordAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(m_iTexCoordAttribute);
 
 
 	GLint err = glGetError();
 	if (err != GL_NO_ERROR) {
-		__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error drawing: %i", err);
+		//__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error drawing: %i", err);
 	}
 }
 
@@ -165,6 +173,7 @@ void Renderer::DeleteBuffers()
 void Renderer::GetAttribAndUniformLocations()
 {
 	m_iPosAttribute = glGetAttribLocation(m_iProgram, "aPos");
+	m_iTexCoordAttribute = glGetAttribLocation(m_iProgram, "aTexCoord");
     m_iColorUniform = glGetUniformLocation(m_iProgram, "uColor");
     m_iPosUniform = glGetUniformLocation(m_iProgram, "uPos");
     m_iTransformationMatrix = glGetUniformLocation(m_iProgram, "uTransformationMatrix");
@@ -179,6 +188,8 @@ void Renderer::FillDefaultRectangle()
 	{
 		m_Rectangle[i].m_vPosition[0] = xOffsets[i];
 		m_Rectangle[i].m_vPosition[1] = yOffsets[i];
+		m_Rectangle[i].m_vTexCoord[0] = xOffsets[i] + 0.5f;
+		m_Rectangle[i].m_vTexCoord[1] = yOffsets[i] + 0.5f;
 	}
 }
 

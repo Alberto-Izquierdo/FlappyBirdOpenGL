@@ -7,6 +7,7 @@ Entity::Entity()
 	, m_fWidth(0)
 	, m_fHeight(0)
 	, m_fRotation(0.f)
+	, m_iTextureID(0)
 {
     m_Color[0] = 0.f;
     m_Color[1] = 0.f;

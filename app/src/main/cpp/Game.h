@@ -34,7 +34,7 @@ public:
 	bool IsPlayerCollidingWithPipes();
 	bool IsPlayerOutOfTheScreen();
 
-    int LoadImage(const char* _pFileName);
+    static int LoadImage(const char* _pFileName);
 private:
 	StateMachineGame* m_pStateMachine;
 	unsigned int m_iLastFrameTimeMiliSecs;
