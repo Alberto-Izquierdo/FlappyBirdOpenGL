@@ -27,6 +27,7 @@ Game::Game()
     m_pRenderer = new Renderer();
 	m_pPipeFactory = new PipeFactory(&m_vEntities);
 	m_pCollisionManager = new CollisionDetectionManager();
+	int iImageID = LoadImage("image.png");
 }
 
 Game::~Game()
@@ -150,7 +151,7 @@ int Game::LoadImage(const char *_pFileName)
 {
     jstring filename = pEnv->NewStringUTF(_pFileName);
     jclass clazz = pEnv->FindClass("com/example/project/game/GameLib");
-    jmethodID methodID = pEnv->GetStaticMethodID(clazz, "LoadImage", "(Ljava/lang/String;)I;");
+    jmethodID methodID = pEnv->GetStaticMethodID(clazz, "LoadTexture", "(Ljava/lang/String;)I");
     jint out = pEnv->CallStaticIntMethod(clazz, methodID, filename);
 	return out;
 }

@@ -19,14 +19,10 @@ public class TextureLoader {
 	public TextureLoader(Activity act) {
 		activity = act;
 	}
-	public int LoadTexture (String path) {
+	public static int LoadTexture (String path) {
 		Bitmap bitmap = null;
 		try {
 			String str = path;
-
-			if (!path.startsWith("/")) {
-				str = "/" + path;
-			}
 
 			File file = new File(activity.getExternalFilesDir(null), str);
 
@@ -57,7 +53,7 @@ public class TextureLoader {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texID[0]);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-		GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
+		GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA4, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buffer);
 		bitmap.recycle();
 		return texID[0];
 	}
