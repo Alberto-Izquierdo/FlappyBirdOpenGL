@@ -15,7 +15,6 @@ public:
 	float GetHeight() const { return m_fHeight; };
 	float* GetColor() { return m_Color; };
 	float GetRotation() const { return m_fRotation; };
-	int GetTextureID() const { m_iTextureID; };
 
 	virtual bool IsFinished() = 0;
 

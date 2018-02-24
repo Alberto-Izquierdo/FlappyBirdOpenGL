@@ -71,6 +71,7 @@ void Game::Render()
 	}
 
 	m_pRenderer->Render(m_pPlayer);
+	m_pRenderer->PostRender();
 }
 
 void Game::HandleScreenTouched()

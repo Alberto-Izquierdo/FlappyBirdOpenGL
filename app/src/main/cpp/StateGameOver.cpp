@@ -18,7 +18,7 @@ void StateGameOver::OnEnter(Game* _pGame)
 
 void StateGameOver::OnExit(Game* _pGame)
 {
-	
+	_pGame->ClearPipes();
 }
 
 void StateGameOver::OnScreenTouched(Game* _pGame)

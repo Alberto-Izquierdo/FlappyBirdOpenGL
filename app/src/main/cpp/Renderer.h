@@ -5,20 +5,14 @@
 #ifndef GAME_RENDERER_H
 #define GAME_RENDERER_H
 
-enum GLShader
-{
-	VERTEX,
-	FRAGMENT
-};
-
 struct Vertex
 {
 	float m_vPosition[2];
-	float m_vTexCoord[2];
 };
 
 class Entity;
 class Matrix4;
+class Shader;
 
 class Renderer {
 public:
@@ -27,22 +21,17 @@ public:
 
 	void PreRender();
 	void Render(Entity* _pEntity);
+	void PostRender();
 private:
-	unsigned int m_iProgram;
 	int m_iPosAttribute;
-	int m_iTexCoordAttribute;
-	int m_iPosUniform;
-	int m_iColorUniform;
-	int m_iTransformationMatrix;
 	unsigned int m_VBO;
 	Vertex m_Rectangle[6];
+	Shader* m_pEntitiesShader;
 
-	unsigned int CreateShader(const char* _pSource, GLShader _eShaderType);
-	void CreateProgram(unsigned int _iVertexShader, unsigned int _iFragmentShader);
 	void InitBuffers();
 	void DeleteBuffers();
-	void GetAttribAndUniformLocations();
 	void FillDefaultRectangle();
+	void InitVertexAttributes();
 
 	Matrix4 GetWorldTransformationToView(float _fScaleX, float _fScaleY, float _fRotation);
 };
