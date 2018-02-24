@@ -23,6 +23,7 @@ public:
 	void UpdatePlayer(float _fDelta);
 	void UpdatePipes(float _fDelta);
 	void Render();
+	void RenderPopup(bool _bStart);
 	void HandleScreenTouched();
 	StateMachineGame* GetStateMachine() { return m_pStateMachine; };
 	void InitPlayer();

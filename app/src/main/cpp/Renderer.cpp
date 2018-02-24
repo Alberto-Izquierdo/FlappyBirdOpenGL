@@ -16,6 +16,7 @@ Renderer::Renderer()
 {
 	FillDefaultRectangle();
 	m_pEntitiesShader = new Shader(Shaders::entitiesVertexSource, Shaders::entitiesFragmentSource);
+	m_pPopupShader = new Shader(Shaders::popupVertexSource, Shaders::popupFragmentSource);
 	InitBuffers();
 	InitVertexAttributes();
 }
@@ -24,6 +25,7 @@ Renderer::~Renderer()
 {
 	DeleteBuffers();
 	delete m_pEntitiesShader;
+	delete m_pPopupShader;
 }
 
 void Renderer::PreRender()
@@ -61,7 +63,29 @@ void Renderer::Render(Entity* _pEntity)
 
 void Renderer::PostRender()
 {
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	m_pEntitiesShader->Unbind();
+}
+
+void Renderer::RenderPopup(bool _bStart)
+{
+	m_pPopupShader->Bind();
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	glVertexAttribPointer(m_iPosPopupAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	glEnableVertexAttribArray(m_iPosPopupAttribute);
+	glVertexAttribPointer(m_iTexPopupAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(m_iTexPopupAttribute);
+
+	GLint err = glGetError();
+	if (err != GL_NO_ERROR) {
+		__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error pre-drawing: %i", err);
+	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, _bStart ? m_iTextureStart : m_iTextureGameOver);
+	m_pPopupShader->SetUniform1i("uTexture", 0);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	m_pPopupShader->Unbind();
 }
 
 void Renderer::InitBuffers()
@@ -74,6 +98,8 @@ void Renderer::InitBuffers()
 void Renderer::InitVertexAttributes()
 {
 	m_iPosAttribute = glGetAttribLocation(m_pEntitiesShader->GetRendererID(), "aPos");
+	m_iPosPopupAttribute = glGetAttribLocation(m_pPopupShader->GetRendererID(), "aPos");
+	m_iTexPopupAttribute = glGetAttribLocation(m_pPopupShader->GetRendererID(), "aTexCoord");
 }
 
 void Renderer::DeleteBuffers()
@@ -90,6 +116,8 @@ void Renderer::FillDefaultRectangle()
 	{
 		m_Rectangle[i].m_vPosition[0] = xOffsets[i];
 		m_Rectangle[i].m_vPosition[1] = yOffsets[i];
+		m_Rectangle[i].m_vTexCoord[0] = xOffsets[i] + 0.5f;
+		m_Rectangle[i].m_vTexCoord[1] = yOffsets[i] + 0.5f;
 	}
 }
 

@@ -41,6 +41,11 @@ void StateMachineGame::Update(Game* _pGame, float _fDelta)
 	}
 }
 
+void StateMachineGame::Render(Game* _pGame)
+{
+	m_pCurrentState->Render(_pGame);
+}
+
 void StateMachineGame::OnScreenTouched(Game* _pGame)
 {
 	m_pCurrentState->OnScreenTouched(_pGame);

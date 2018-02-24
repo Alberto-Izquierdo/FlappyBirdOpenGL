@@ -36,3 +36,8 @@ void StateGamePlaying::Update(Game* _pGame, float _fDeltaTime)
 		_pGame->GetStateMachine()->SwitchState(StateID::OVER);
 	}
 }
+
+void StateGamePlaying::Render(Game* _pGame)
+{
+
+}

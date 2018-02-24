@@ -21,6 +21,7 @@ public:
 	void Init(Game* _pGame, StateID);
 
 	void Update(Game* _pGame, float _fDelta);
+	void Render(Game* _pGame);
 	void OnScreenTouched(Game* _pGame);
 
 	void SwitchState(StateID _eState);

@@ -30,3 +30,8 @@ void StateGameInit::Update(Game* _pGame, float _fDeltaTime)
 {
 
 }
+
+void StateGameInit::Render(Game* _pGame)
+{
+	_pGame->RenderPopup(true);
+}

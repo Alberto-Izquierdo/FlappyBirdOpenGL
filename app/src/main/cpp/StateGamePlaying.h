@@ -14,6 +14,7 @@ public:
 	void OnExit(Game* _pGame) override;
 	void OnScreenTouched(Game* _pGame) override;
 	void Update(Game* _pGame, float _fDeltaTime) override;
+	void Render(Game* _pGame) override;
 };
 
 #endif

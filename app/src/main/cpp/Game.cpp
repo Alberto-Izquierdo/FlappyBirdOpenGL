@@ -24,11 +24,13 @@ Game::Game()
 {
 	m_pStateMachine = new StateMachineGame();
 	m_pStateMachine->Init(this, StateID::INIT);
-    m_pRenderer = new Renderer();
-	m_pPipeFactory = new PipeFactory(&m_vEntities);
-	m_pCollisionManager = new CollisionDetectionManager();
 	int iImageID = LoadImage("image.png");
 	int iImageID2 = LoadImage("image2.png");
+    m_pRenderer = new Renderer();
+	m_pRenderer->SetTextureStart(iImageID);
+	m_pRenderer->SetTextureGameOver(iImageID2);
+	m_pPipeFactory = new PipeFactory(&m_vEntities);
+	m_pCollisionManager = new CollisionDetectionManager();
 }
 
 Game::~Game()
@@ -72,6 +74,13 @@ void Game::Render()
 
 	m_pRenderer->Render(m_pPlayer);
 	m_pRenderer->PostRender();
+
+	m_pStateMachine->Render(this);
+}
+
+void Game::RenderPopup(bool _bStart)
+{
+	m_pRenderer->RenderPopup(_bStart);
 }
 
 void Game::HandleScreenTouched()
