@@ -21,6 +21,7 @@ static jobject pObject = NULL;
 Game::Game()
 	: m_iLastFrameTimeMiliSecs(0)
 	, m_pPlayer(nullptr)
+	, m_iScore(0)
 {
 	m_pStateMachine = new StateMachineGame();
 	m_pStateMachine->Init(this, StateID::INIT);
@@ -88,7 +89,7 @@ void Game::HandleScreenTouched()
 	m_pStateMachine->OnScreenTouched(this);
 }
 
-void Game::InitPlayer()
+void Game::SetupNewGame()
 {
 	if (m_pPlayer == nullptr)
 	{
@@ -96,6 +97,8 @@ void Game::InitPlayer()
 	}
 
 	m_pPlayer->ResetPosition();
+	ClearPipes();
+	m_iScore = 0;
 }
 
 void Game::ClearPipes()
@@ -139,18 +142,39 @@ void Game::UpdatePipes(float _fDelta)
 	for (int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
 	{
 		Entity* pEntity = m_vEntities.at(i);
-		pEntity->Update(_fDelta);
-
-		if (pEntity->IsFinished())
+		if (pEntity->GetType() == EntityType::PIPE)
 		{
-			delete pEntity;
-			m_vEntities.erase(m_vEntities.begin() + i);
-			--i;
-			--iSize;
+			pEntity->Update(_fDelta);
+
+			if (pEntity->IsFinished())
+			{
+				delete pEntity;
+				m_vEntities.erase(m_vEntities.begin() + i);
+				--i;
+				--iSize;
+			}
+			else
+			{
+				if (pEntity->GetX() + pEntity->GetWidth() / 2 < m_pPlayer->GetX())
+				{
+					Pipe* pPipe = static_cast<Pipe*>(pEntity);
+
+					if (pPipe->DoesItAddPointsToScore())
+					{
+						pPipe->ScoreAdded();
+						AddPointsToScore(1);
+					}
+				}
+			}
 		}
 	}
 
 	m_pPipeFactory->Update(_fDelta);
+}
+
+void Game::AddPointsToScore(int _iPoints)
+{
+	m_iScore += _iPoints;
 }
 
 void Game::UpdatePlayer(float _fDelta)

@@ -1,6 +1,12 @@
 #ifndef Entity_H
 #define Entity_H
 
+enum EntityType
+{
+	PLAYER,
+	PIPE,
+};
+
 class Entity
 {
 public:
@@ -17,6 +23,7 @@ public:
 	float GetRotation() const { return m_fRotation; };
 
 	virtual bool IsFinished() = 0;
+	EntityType GetType() const { return m_eType; };
 
 protected:
 	float m_fX, m_fY;
@@ -24,6 +31,7 @@ protected:
 	float m_fRotation;
 	float m_Color[4];
 	int m_iTextureID;
+	EntityType m_eType;
 };
 
 #endif

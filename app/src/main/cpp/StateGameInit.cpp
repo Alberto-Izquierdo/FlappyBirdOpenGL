@@ -13,7 +13,7 @@ StateGameInit::~StateGameInit()
 
 void StateGameInit::OnEnter(Game* _pGame)
 {
-	_pGame->InitPlayer();
+	_pGame->SetupNewGame();
 }
 
 void StateGameInit::OnExit(Game* _pGame)

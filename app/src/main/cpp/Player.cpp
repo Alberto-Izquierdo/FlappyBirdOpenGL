@@ -9,6 +9,7 @@ Player::Player()
 	m_fWidth = 100.f;
 	m_fHeight = 100.f;
     m_Color[0] = 1.0f;
+	m_eType = EntityType::PLAYER;
 }
 
 Player::~Player()

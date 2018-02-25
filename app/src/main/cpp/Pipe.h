@@ -12,9 +12,12 @@ public:
 	void Update(float _fDeltaTime) override;
 
 	bool IsFinished() override;
+	bool DoesItAddPointsToScore() const { return m_bAddsPointsToScore; };
+	void ScoreAdded() { m_bAddsPointsToScore = false; };
 
 protected:
-	float m_bIsBottom;
+	bool m_bIsBottom;
+	bool m_bAddsPointsToScore;
 	const static float k_fPipeSpeed;
 };
 

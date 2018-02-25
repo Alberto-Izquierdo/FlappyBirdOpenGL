@@ -26,7 +26,7 @@ public:
 	void RenderPopup(bool _bStart);
 	void HandleScreenTouched();
 	StateMachineGame* GetStateMachine() { return m_pStateMachine; };
-	void InitPlayer();
+	void SetupNewGame();
 
 	void ClearPipes();
 	void Jump();
@@ -45,6 +45,9 @@ private:
 	Player* m_pPlayer;
 	std::vector<Entity*> m_vEntities;
 	PipeFactory* m_pPipeFactory;
+	int m_iScore;
+
+	void AddPointsToScore(int _iPoints);
 };
 
 
