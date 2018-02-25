@@ -7,16 +7,18 @@
 #include "Constants.h"
 #include "Shader.h"
 #include "Shaders.h"
+#include "VertexBuffer.h"
 
 #include <EGL/egl.h>
 #include <GLES3/gl3.h>
 #include <android/log.h>
+#include <cmath>
 
 Renderer::Renderer()
 {
-	FillDefaultRectangle();
 	m_pEntitiesShader = new Shader(Shaders::entitiesVertexSource, Shaders::entitiesFragmentSource);
 	m_pPopupShader = new Shader(Shaders::popupVertexSource, Shaders::popupFragmentSource);
+	m_pNumberShader = new Shader(Shaders::numberVertexSource, Shaders::numberFragmentSource);
 	InitBuffers();
 	InitVertexAttributes();
 }
@@ -26,6 +28,7 @@ Renderer::~Renderer()
 	DeleteBuffers();
 	delete m_pEntitiesShader;
 	delete m_pPopupShader;
+	delete m_pNumberShader;
 }
 
 void Renderer::PreRender()
@@ -33,9 +36,7 @@ void Renderer::PreRender()
     glClearColor(0.678431373f, 0.847058824f, 0.901960784f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_pEntitiesShader->Bind();
-    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glVertexAttribPointer(m_iPosAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glEnableVertexAttribArray(m_iPosAttribute);
+	m_pEntitiesVertexBuffer->Bind();
 
 	GLint err = glGetError();
 	if (err != GL_NO_ERROR) {
@@ -63,36 +64,106 @@ void Renderer::Render(Entity* _pEntity)
 
 void Renderer::PostRender()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	m_pEntitiesVertexBuffer->Unbind();
 	m_pEntitiesShader->Unbind();
 }
 
 void Renderer::RenderPopup(bool _bStart)
 {
 	m_pPopupShader->Bind();
-    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glVertexAttribPointer(m_iPosPopupAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-	glEnableVertexAttribArray(m_iPosPopupAttribute);
-	glVertexAttribPointer(m_iTexPopupAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(m_iTexPopupAttribute);
+	if (_bStart)
+	{
+		m_pStartPopupVertexBuffer->Bind();
+	}
+	else
+	{
+		m_pGameOverPopupVertexBuffer->Bind();
+	}
 
 	GLint err = glGetError();
 	if (err != GL_NO_ERROR) {
 		__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error pre-drawing: %i", err);
 	}
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, _bStart ? m_iTextureStart : m_iTextureGameOver);
+	glBindTexture(GL_TEXTURE_2D, m_iTextureNumbers);
 	m_pPopupShader->SetUniform1i("uTexture", 0);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	m_pPopupShader->Unbind();
 }
 
+void Renderer::RenderScore(int _iScore)
+{
+	m_pNumberShader->Bind();
+	m_pNumbersPopupVertexBuffer->Bind();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_iTextureNumbers);
+	int iAux = 1;
+
+	do
+	{
+		int unit = ((_iScore / (int)std::pow(10, iAux - 1)) % 10);
+		float vTexCoordOffset[2] = {(unit % 5) * 0.2f, ((unit % (int)std::pow(10, iAux)) / 5) * 0.2f};
+		m_pNumberShader->SetUniform2f("uTexCoordOffset", vTexCoordOffset[0], vTexCoordOffset[1]);
+		m_pNumberShader->SetUniform2f("uPos", -0.3f * (float)(iAux - 1), 0);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		++iAux;
+	} while (_iScore / (int)std::pow(10, iAux - 1) > 0);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	m_pNumbersPopupVertexBuffer->Unbind();
+	m_pNumberShader->Unbind();
+}
+
 void Renderer::InitBuffers()
 {
-	glGenBuffers(1, &m_VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(m_Rectangle), &m_Rectangle[0], GL_DYNAMIC_DRAW);
+	{
+		float vPositions[12] = {-0.5f, -0.5f,
+								 0.5f, -0.5f,
+								 0.5f,  0.5f,
+								-0.5f, -0.5f,
+								 0.5f,  0.5f,
+								-0.5f,  0.5f};
+		float vTexCoords[12] = {};
+		m_pEntitiesVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
+	}
+
+	{
+		float vPositions[12] = {-1.0f, -0.25f,
+								 1.0f, -0.25f,
+								 1.0f,  0.25f,
+								-1.0f, -0.25f,
+								 1.0f,  0.25f,
+								-1.0f,  0.25f};
+		float vTexCoords[12] = {0.0f,  0.839f,
+								1.0f,  0.839f,
+								1.0f,  0.404f,
+								0.0f,  0.839f,
+								1.0f,  0.404f,
+								0.0f,  0.404f};
+		m_pStartPopupVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
+		vPositions[1] = vPositions[3] = vPositions[7] = -0.12f;
+		vPositions[5] = vPositions[9] = vPositions[11] = 0.12f;
+		vTexCoords[1] = vTexCoords[3] = vTexCoords[7] = 1.f;
+		vTexCoords[5] = vTexCoords[9] = vTexCoords[11] = 0.839f;
+		m_pGameOverPopupVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
+	}
+	{
+		float vPositions[12] = { 0.7f,  0.7f,
+								 1.0f,  0.7f,
+								 1.0f,  1.0f,
+								 0.7f,  0.7f,
+								 1.0f,  1.0f,
+								 0.7f,  1.0f};
+		float vTexCoords[12] = {0.0f,  0.2f,
+								0.2f,  0.2f,
+								0.2f,  0.0f,
+								0.0f,  0.2f,
+								0.2f,  0.0f,
+								0.0f,  0.0f};
+		m_pNumbersPopupVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
+	}
 }
 
 void Renderer::InitVertexAttributes()
@@ -104,21 +175,10 @@ void Renderer::InitVertexAttributes()
 
 void Renderer::DeleteBuffers()
 {
-	glDeleteBuffers(1, &m_VBO);
-}
-
-void Renderer::FillDefaultRectangle()
-{
-	float xOffsets [6] = {-0.5f, 0.5f, 0.5f, -0.5f, 0.5f, -0.5f};
-	float yOffsets [6] = {-0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f};
-
-	for (int i = 0; i < 6; ++i)
-	{
-		m_Rectangle[i].m_vPosition[0] = xOffsets[i];
-		m_Rectangle[i].m_vPosition[1] = yOffsets[i];
-		m_Rectangle[i].m_vTexCoord[0] = xOffsets[i] + 0.5f;
-		m_Rectangle[i].m_vTexCoord[1] = yOffsets[i] + 0.5f;
-	}
+	delete m_pEntitiesVertexBuffer;
+	delete m_pStartPopupVertexBuffer;
+	delete m_pGameOverPopupVertexBuffer;
+	delete m_pNumbersPopupVertexBuffer;
 }
 
 Matrix4 Renderer::GetWorldTransformationToView(float _fWidth, float _fHeight, float _fRotation)

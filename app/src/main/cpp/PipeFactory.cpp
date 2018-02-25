@@ -42,6 +42,6 @@ void PipeFactory::Update(float _fDelta)
 }
 
 const float PipeFactory::k_fTimeBetweenPipes = 2.f;
-const float PipeFactory::k_fYDistanceBetweenPipes = 430;
+const float PipeFactory::k_fYDistanceBetweenPipes = 430.f;
 const float PipeFactory::k_fMinimumDistanceToWindowBorder = 200.f;
 const int PipeFactory::k_iYMaximumDistanceBetweenPipes = 1000;

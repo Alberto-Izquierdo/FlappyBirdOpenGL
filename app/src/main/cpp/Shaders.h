@@ -8,6 +8,9 @@ namespace Shaders
 
 	extern const char* popupVertexSource;
 	extern const char* popupFragmentSource;
+
+	extern const char* numberVertexSource;
+	extern const char* numberFragmentSource;
 };
 
 #endif

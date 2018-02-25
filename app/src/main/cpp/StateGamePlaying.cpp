@@ -39,5 +39,5 @@ void StateGamePlaying::Update(Game* _pGame, float _fDeltaTime)
 
 void StateGamePlaying::Render(Game* _pGame)
 {
-
+	_pGame->RenderScore();
 }

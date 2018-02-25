@@ -24,6 +24,7 @@ public:
 	void UpdatePipes(float _fDelta);
 	void Render();
 	void RenderPopup(bool _bStart);
+	void RenderScore();
 	void HandleScreenTouched();
 	StateMachineGame* GetStateMachine() { return m_pStateMachine; };
 	void SetupNewGame();

@@ -5,15 +5,10 @@
 #ifndef GAME_RENDERER_H
 #define GAME_RENDERER_H
 
-struct Vertex
-{
-	float m_vPosition[2];
-	float m_vTexCoord[2];
-};
-
 class Entity;
 class Matrix4;
 class Shader;
+class VertexBuffer;
 
 class Renderer {
 public:
@@ -25,24 +20,27 @@ public:
 	void PostRender();
 
 	void RenderPopup(bool _bStart);
+	void RenderScore(int _iScore);
 
-	void SetTextureStart(int _iImageID) { m_iTextureStart = _iImageID; };
-	void SetTextureGameOver(int _iImageID) { m_iTextureGameOver = _iImageID; };
+	void SetTextureNumbers(int _iImageID) { m_iTextureNumbers = _iImageID; };
 
 private:
 	int m_iPosAttribute;
 	int m_iPosPopupAttribute;
 	int m_iTexPopupAttribute;
-	int m_iTextureStart;
-	int m_iTextureGameOver;
+	int m_iTextureNumbers;
 	unsigned int m_VBO;
-	Vertex m_Rectangle[6];
 	Shader* m_pEntitiesShader;
 	Shader* m_pPopupShader;
+	Shader* m_pNumberShader;
+
+	VertexBuffer* m_pEntitiesVertexBuffer;
+	VertexBuffer* m_pStartPopupVertexBuffer;
+	VertexBuffer* m_pGameOverPopupVertexBuffer;
+	VertexBuffer* m_pNumbersPopupVertexBuffer;
 
 	void InitBuffers();
 	void DeleteBuffers();
-	void FillDefaultRectangle();
 	void InitVertexAttributes();
 
 	Matrix4 GetWorldTransformationToView(float _fScaleX, float _fScaleY, float _fRotation);

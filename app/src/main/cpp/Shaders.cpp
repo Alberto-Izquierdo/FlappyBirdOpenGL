@@ -25,7 +25,7 @@ const char* Shaders::popupVertexSource =
 	"attribute vec2 aTexCoord;\n"
 	"varying vec2 vTexCoord;\n"
 	"void main () {\n"
-		"gl_Position = vec4(2.0 * aPos.x, -aPos.y, 0.0, 1.0);\n"
+		"gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);\n"
 		"vTexCoord = aTexCoord;\n"
 	"}\n\0";
 
@@ -35,4 +35,23 @@ const char* Shaders::popupFragmentSource =
 	"varying vec2 vTexCoord;\n"
 	"void main () {\n"
 		"gl_FragColor = texture2D(uTexture, vTexCoord);\n"
+	"}\n\0";
+
+const char* Shaders::numberVertexSource =
+	"attribute vec2 aPos;\n"
+	"attribute vec2 aTexCoord;\n"
+	"uniform vec2 uPos;\n"
+	"varying vec2 vTexCoord;\n"
+	"void main () {\n"
+		"gl_Position = vec4(aPos.x + uPos.x, aPos.y, 0.0, 1.0);\n"
+		"vTexCoord = aTexCoord;\n"
+	"}\n\0";
+
+const char* Shaders::numberFragmentSource =
+	"precision mediump float;\n"
+	"uniform sampler2D uTexture;\n"
+	"uniform vec2 uTexCoordOffset;\n"
+	"varying vec2 vTexCoord;\n"
+	"void main () {\n"
+		"gl_FragColor = texture2D(uTexture, vec2(vTexCoord.x + uTexCoordOffset.x, vTexCoord.y + uTexCoordOffset.y));\n"
 	"}\n\0";

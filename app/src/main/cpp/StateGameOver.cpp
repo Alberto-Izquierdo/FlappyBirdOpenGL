@@ -40,4 +40,6 @@ void StateGameOver::Render(Game* _pGame)
 	{
 		_pGame->RenderPopup(false);
 	}
+
+	_pGame->RenderScore();
 }
