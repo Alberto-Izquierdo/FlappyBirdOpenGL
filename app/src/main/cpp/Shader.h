@@ -25,6 +25,7 @@ public:
 
 	void SetUniform1i(const std::string& _sName, int _iV);
 	void SetUniformMatrix4(const std::string& _sName, Matrix4& matrix);
+	void SetUniform1f(const std::string& _sName, float _fV);
 	void SetUniform2f(const std::string& _sName, float _fV1, float _fV2);
 	void SetUniform4f(const std::string& _sName, float _fV1, float _fV2, float _fV3, float _fV4);
 

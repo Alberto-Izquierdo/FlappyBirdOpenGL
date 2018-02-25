@@ -5,6 +5,7 @@
 StateGamePlaying::StateGamePlaying()
 	: State()
 {
+	m_eState = StateID::PLAYING;
 }
 
 StateGamePlaying::~StateGamePlaying()

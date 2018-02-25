@@ -17,7 +17,10 @@ public:
 	virtual void Update(Game* _pGame, float _fDeltaTime) = 0;
 	virtual void Render(Game* _pGame) = 0;
 
+	StateID GetStateID() const { return m_eState; };
+
 protected:
+	StateID m_eState;
 };
 
 #endif

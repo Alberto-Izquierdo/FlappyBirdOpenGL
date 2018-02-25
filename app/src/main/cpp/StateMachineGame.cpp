@@ -72,3 +72,8 @@ void StateMachineGame::ClearStates()
 
 	m_mStates.clear();
 }
+
+StateID StateMachineGame::GetCurrentState() const
+{
+	return m_pCurrentState->GetStateID();
+}

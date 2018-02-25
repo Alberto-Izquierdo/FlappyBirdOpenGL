@@ -5,6 +5,7 @@
 StateGameOver::StateGameOver()
 	: State()
 {
+	m_eState = StateID::OVER;
 }
 
 StateGameOver::~StateGameOver()

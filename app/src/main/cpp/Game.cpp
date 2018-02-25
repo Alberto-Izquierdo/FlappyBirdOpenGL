@@ -63,7 +63,8 @@ void Game::Update()
 
 void Game::Render()
 {
-	// Clean the screen
+	StateID eCurrentState = m_pStateMachine->GetCurrentState();
+	m_pRenderer->RenderBackground(eCurrentState == StateID::PLAYING ? m_fTimeInCurrentState * 0.05f : -1.f, eCurrentState == StateID::INIT);
 	m_pRenderer->PreRender();
 	// Render the entities in the game
 	for (unsigned int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)

@@ -27,6 +27,7 @@ public:
 	void SwitchState(StateID _eState);
 	void InitStates();
 	void ClearStates();
+	StateID GetCurrentState() const;
 
 protected:
 	State* m_pCurrentState;

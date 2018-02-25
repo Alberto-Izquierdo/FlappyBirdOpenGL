@@ -14,6 +14,9 @@ namespace Shaders
 
 	extern const char* numberVertexSource;
 	extern const char* numberFragmentSource;
+
+	extern const char* backgroundVertexSource;
+	extern const char* backgroundFragmentSource;
 };
 
 #endif

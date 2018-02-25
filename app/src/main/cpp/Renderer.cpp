@@ -16,33 +16,59 @@
 
 Renderer::Renderer()
 {
+	m_pBackgroundShader = new Shader(Shaders::backgroundVertexSource, Shaders::backgroundFragmentSource);
 	m_pEntitiesShader = new Shader(Shaders::entitiesVertexSource, Shaders::entitiesFragmentSource);
 	m_pPlayerShader = new Shader(Shaders::playerVertexSource, Shaders::playerFragmentSource);
 	m_pPopupShader = new Shader(Shaders::popupVertexSource, Shaders::popupFragmentSource);
 	m_pNumberShader = new Shader(Shaders::numberVertexSource, Shaders::numberFragmentSource);
 	InitBuffers();
-	InitVertexAttributes();
 }
 
 Renderer::~Renderer()
 {
 	DeleteBuffers();
+	delete m_pBackgroundShader;
 	delete m_pEntitiesShader;
 	delete m_pPlayerShader;
 	delete m_pPopupShader;
 	delete m_pNumberShader;
 }
 
-void Renderer::PreRender()
+void Renderer::RenderBackground(float _fTime, bool _bInitState)
 {
     glClearColor(0.678431373f, 0.847058824f, 0.901960784f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_pBackgroundShader->Bind();
+	m_pBackgroundVertexBuffer->Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_iTextureNumbers);
+	m_pBackgroundShader->SetUniform1i("uTexture", 0);
+
+	if (_bInitState)
+	{
+		m_pBackgroundShader->SetUniform1f("uTime", 0.f);
+	}
+	else if (_fTime >= 0.f)
+	{
+		m_pBackgroundShader->SetUniform1f("uTime", _fTime);
+	}
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	m_pBackgroundVertexBuffer->Unbind();
+	m_pBackgroundShader->Unbind();
+}
+
+void Renderer::PreRender()
+{
 	m_pEntitiesShader->Bind();
 	m_pEntitiesVertexBuffer->Bind();
 
 	GLint err = glGetError();
 	if (err != GL_NO_ERROR) {
-		__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error pre-drawing: %i", err);
+		//__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error pre-drawing: %i", err);
 	}
 }
 
@@ -179,6 +205,22 @@ void Renderer::InitBuffers()
 	}
 
 	{
+		float vPositions[12] = {-1.0f, -1.0f,
+								 1.0f, -1.0f,
+								 1.0f,  1.0f,
+								-1.0f, -1.0f,
+								 1.0f,  1.0f,
+								-1.0f,  1.0f};
+		float vTexCoords[12] = {0.0f,  1.0f,
+								0.281f, 1.0f,
+								0.281f, 0.5f,
+								0.0f,  1.0f,
+								0.281f, 0.5f,
+								0.0f,  0.5f};
+		m_pBackgroundVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
+	}
+
+	{
 		float vPositions[12] = {-1.0f, -0.25f,
 								 1.0f, -0.25f,
 								 1.0f,  0.25f,
@@ -223,15 +265,9 @@ void Renderer::InitBuffers()
 	}
 }
 
-void Renderer::InitVertexAttributes()
-{
-	m_iPosAttribute = glGetAttribLocation(m_pEntitiesShader->GetRendererID(), "aPos");
-	m_iPosPopupAttribute = glGetAttribLocation(m_pPopupShader->GetRendererID(), "aPos");
-	m_iTexPopupAttribute = glGetAttribLocation(m_pPopupShader->GetRendererID(), "aTexCoord");
-}
-
 void Renderer::DeleteBuffers()
 {
+	delete m_pBackgroundVertexBuffer;
 	delete m_pEntitiesVertexBuffer;
 	delete m_pPlayerVertexBuffer;
 	delete m_pStartPopupVertexBuffer;

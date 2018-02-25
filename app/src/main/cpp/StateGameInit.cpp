@@ -5,6 +5,7 @@
 StateGameInit::StateGameInit()
 	: State()
 {
+	m_eState = StateID::INIT;
 }
 
 StateGameInit::~StateGameInit()

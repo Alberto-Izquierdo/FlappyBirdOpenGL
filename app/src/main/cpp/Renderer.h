@@ -15,6 +15,8 @@ public:
 	Renderer();
 	~Renderer();
 
+	void RenderBackground(float _fTime, bool _bInitState);
+
 	void PreRender();
 	void Render(Entity* _pEntity);
 	void PostRender();
@@ -27,16 +29,15 @@ public:
 	void SetTextureNumbers(int _iImageID) { m_iTextureNumbers = _iImageID; };
 
 private:
-	int m_iPosAttribute;
-	int m_iPosPopupAttribute;
-	int m_iTexPopupAttribute;
 	int m_iTextureNumbers;
-	unsigned int m_VBO;
+
+	Shader* m_pBackgroundShader;
 	Shader* m_pEntitiesShader;
 	Shader* m_pPlayerShader;
 	Shader* m_pPopupShader;
 	Shader* m_pNumberShader;
 
+	VertexBuffer* m_pBackgroundVertexBuffer;
 	VertexBuffer* m_pEntitiesVertexBuffer;
 	VertexBuffer* m_pPlayerVertexBuffer;
 	VertexBuffer* m_pStartPopupVertexBuffer;
@@ -45,7 +46,6 @@ private:
 
 	void InitBuffers();
 	void DeleteBuffers();
-	void InitVertexAttributes();
 
 	Matrix4 GetWorldTransformationToView(float _fScaleX, float _fScaleY, float _fRotation);
 };

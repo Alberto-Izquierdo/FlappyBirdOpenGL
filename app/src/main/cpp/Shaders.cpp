@@ -72,3 +72,24 @@ const char* Shaders::numberFragmentSource =
 	"void main () {\n"
 		"gl_FragColor = texture2D(uTexture, vec2(vTexCoord.x + uTexCoordOffset.x, vTexCoord.y + uTexCoordOffset.y));\n"
 	"}\n\0";
+
+const char* Shaders::backgroundVertexSource =
+	"attribute vec2 aPos;\n"
+	"attribute vec2 aTexCoord;\n"
+	"uniform float uTime;\n"
+	"varying vec2 vTexCoord;\n"
+	"varying float vTime;\n"
+	"void main() {\n"
+		"gl_Position = vec4(aPos, 0.0, 1.0);\n"
+		"vTexCoord = aTexCoord;\n"
+		"vTime = uTime;\n"
+	"}\n";
+
+const char* Shaders::backgroundFragmentSource =
+	"precision mediump float;\n"
+	"uniform sampler2D uTexture;\n"
+	"varying vec2 vTexCoord;\n"
+	"varying float vTime;\n"
+	"void main () {\n"
+		"gl_FragColor = texture2D(uTexture, vec2(vTexCoord.x + vTime, vTexCoord.y));\n"
+	"}\n\0";
