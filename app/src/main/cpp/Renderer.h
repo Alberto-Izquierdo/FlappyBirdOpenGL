@@ -19,6 +19,8 @@ public:
 	void Render(Entity* _pEntity);
 	void PostRender();
 
+	void RenderPlayer(Entity* _pEntity);
+
 	void RenderPopup(bool _bStart);
 	void RenderScore(int _iScore);
 
@@ -31,10 +33,12 @@ private:
 	int m_iTextureNumbers;
 	unsigned int m_VBO;
 	Shader* m_pEntitiesShader;
+	Shader* m_pPlayerShader;
 	Shader* m_pPopupShader;
 	Shader* m_pNumberShader;
 
 	VertexBuffer* m_pEntitiesVertexBuffer;
+	VertexBuffer* m_pPlayerVertexBuffer;
 	VertexBuffer* m_pStartPopupVertexBuffer;
 	VertexBuffer* m_pGameOverPopupVertexBuffer;
 	VertexBuffer* m_pNumbersPopupVertexBuffer;

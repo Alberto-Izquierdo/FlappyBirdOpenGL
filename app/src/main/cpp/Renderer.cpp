@@ -17,6 +17,7 @@
 Renderer::Renderer()
 {
 	m_pEntitiesShader = new Shader(Shaders::entitiesVertexSource, Shaders::entitiesFragmentSource);
+	m_pPlayerShader = new Shader(Shaders::playerVertexSource, Shaders::playerFragmentSource);
 	m_pPopupShader = new Shader(Shaders::popupVertexSource, Shaders::popupFragmentSource);
 	m_pNumberShader = new Shader(Shaders::numberVertexSource, Shaders::numberFragmentSource);
 	InitBuffers();
@@ -27,6 +28,7 @@ Renderer::~Renderer()
 {
 	DeleteBuffers();
 	delete m_pEntitiesShader;
+	delete m_pPlayerShader;
 	delete m_pPopupShader;
 	delete m_pNumberShader;
 }
@@ -60,6 +62,32 @@ void Renderer::Render(Entity* _pEntity)
 	if (err != GL_NO_ERROR) {
 		__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error drawing: %i", err);
 	}
+}
+
+void Renderer::RenderPlayer(Entity* _pEntity)
+{
+	m_pPlayerShader->Bind();
+	m_pPlayerVertexBuffer->Bind();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_iTextureNumbers);
+	m_pPopupShader->SetUniform1i("uTexture", 0);
+
+	float fDimensions[2] = {_pEntity->GetWidth() + 40, _pEntity->GetHeight() + 40};
+	float fPosition[2] = {_pEntity->GetX() / Constants::k_fWorldWidth * 2.f - 1.f, _pEntity->GetY() / Constants::k_fWorldHeight * 2.f - 1.f};
+	m_pPlayerShader->SetUniform4f("uPos", fPosition[0], fPosition[1], 0.f, 0.f);
+	float fRotation = _pEntity->GetRotation() * 2.f * 3.1415f / 360.f;
+	Matrix4 matrix = GetWorldTransformationToView(fDimensions[0], fDimensions[1], fRotation);
+	m_pPlayerShader->SetUniformMatrix4("uTransformationMatrix", matrix);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDisable(GL_BLEND);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	m_pPlayerVertexBuffer->Unbind();
+	m_pPlayerShader->Unbind();
 }
 
 void Renderer::PostRender()
@@ -99,12 +127,13 @@ void Renderer::RenderScore(int _iScore)
 	m_pNumbersPopupVertexBuffer->Bind();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_iTextureNumbers);
+	m_pPopupShader->SetUniform1i("uTexture", 0);
 	int iAux = 1;
 
 	do
 	{
 		int unit = ((_iScore / (int)std::pow(10, iAux - 1)) % 10);
-		float vTexCoordOffset[2] = {(unit % 5) * 0.2f, ((unit % (int)std::pow(10, iAux)) / 5) * 0.2f};
+		float vTexCoordOffset[2] = {(unit % 5) * 0.1f, ((unit % (int)std::pow(10, iAux)) / 5) * 0.1f};
 		m_pNumberShader->SetUniform2f("uTexCoordOffset", vTexCoordOffset[0], vTexCoordOffset[1]);
 		m_pNumberShader->SetUniform2f("uPos", -0.2f * (float)(iAux - 1), 0);
 		glEnable(GL_BLEND);
@@ -133,6 +162,23 @@ void Renderer::InitBuffers()
 	}
 
 	{
+		float vPositions[12] = {-0.5f, -0.5f,
+								 0.5f, -0.5f,
+								 0.5f,  0.5f,
+								-0.5f, -0.5f,
+								 0.5f,  0.5f,
+								-0.5f,  0.5f};
+		float vTexCoords[12] = {
+								0.5f,  0.25f,
+								0.75f, 0.25f,
+								0.75f, 0.0f,
+								0.5f,  0.25f,
+								0.75f, 0.0f,
+								0.5f,  0.0f};
+		m_pPlayerVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
+	}
+
+	{
 		float vPositions[12] = {-1.0f, -0.25f,
 								 1.0f, -0.25f,
 								 1.0f,  0.25f,
@@ -145,11 +191,15 @@ void Renderer::InitBuffers()
 								0.0f,  0.839f,
 								1.0f,  0.404f,
 								0.0f,  0.404f};
+		for (int i = 0; i < 12; ++i)
+		{
+			vTexCoords[i] /= 2.f;
+		}
 		m_pStartPopupVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
 		vPositions[1] = vPositions[3] = vPositions[7] = -0.12f;
 		vPositions[5] = vPositions[9] = vPositions[11] = 0.12f;
-		vTexCoords[1] = vTexCoords[3] = vTexCoords[7] = 1.f;
-		vTexCoords[5] = vTexCoords[9] = vTexCoords[11] = 0.839f;
+		vTexCoords[1] = vTexCoords[3] = vTexCoords[7] = 1.f / 2.f;
+		vTexCoords[5] = vTexCoords[9] = vTexCoords[11] = 0.839f / 2.f;
 		m_pGameOverPopupVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
 	}
 	{
@@ -165,6 +215,10 @@ void Renderer::InitBuffers()
 								0.0f,  0.2f,
 								0.2f,  0.0f,
 								0.0f,  0.0f};
+		for (int i = 0; i < 12; ++i)
+		{
+			vTexCoords[i] /= 2.f;
+		}
 		m_pNumbersPopupVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
 	}
 }
@@ -179,6 +233,7 @@ void Renderer::InitVertexAttributes()
 void Renderer::DeleteBuffers()
 {
 	delete m_pEntitiesVertexBuffer;
+	delete m_pPlayerVertexBuffer;
 	delete m_pStartPopupVertexBuffer;
 	delete m_pGameOverPopupVertexBuffer;
 	delete m_pNumbersPopupVertexBuffer;

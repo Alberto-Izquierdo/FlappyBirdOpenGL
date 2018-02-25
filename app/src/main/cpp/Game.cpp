@@ -25,7 +25,7 @@ Game::Game()
 {
 	m_pStateMachine = new StateMachineGame();
 	m_pStateMachine->Init(this, StateID::INIT);
-	int iImageID = LoadImage("numbers.png");
+	int iImageID = LoadImage("texture_map.png");
 	m_pRenderer = new Renderer();
 	m_pRenderer->SetTextureNumbers(iImageID);
 	m_pPipeFactory = new PipeFactory(&m_vEntities);
@@ -71,7 +71,7 @@ void Game::Render()
 		m_pRenderer->Render(m_vEntities.at(i));
 	}
 
-	m_pRenderer->Render(m_pPlayer);
+	m_pRenderer->RenderPlayer(m_pPlayer);
 	m_pRenderer->PostRender();
 
 	m_pStateMachine->Render(this);
