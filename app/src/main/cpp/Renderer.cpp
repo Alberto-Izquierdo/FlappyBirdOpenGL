@@ -106,8 +106,11 @@ void Renderer::RenderScore(int _iScore)
 		int unit = ((_iScore / (int)std::pow(10, iAux - 1)) % 10);
 		float vTexCoordOffset[2] = {(unit % 5) * 0.2f, ((unit % (int)std::pow(10, iAux)) / 5) * 0.2f};
 		m_pNumberShader->SetUniform2f("uTexCoordOffset", vTexCoordOffset[0], vTexCoordOffset[1]);
-		m_pNumberShader->SetUniform2f("uPos", -0.3f * (float)(iAux - 1), 0);
+		m_pNumberShader->SetUniform2f("uPos", -0.2f * (float)(iAux - 1), 0);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDisable(GL_BLEND);
 		++iAux;
 	} while (_iScore / (int)std::pow(10, iAux - 1) > 0);
 
