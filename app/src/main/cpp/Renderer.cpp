@@ -65,10 +65,13 @@ void Renderer::PreRender()
 {
 	m_pEntitiesShader->Bind();
 	m_pEntitiesVertexBuffer->Bind();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_iTextureNumbers);
+	m_pBackgroundShader->SetUniform1i("uTexture", 0);
 
 	GLint err = glGetError();
 	if (err != GL_NO_ERROR) {
-		//__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error pre-drawing: %i", err);
+		__android_log_print(ANDROID_LOG_ERROR, "DRAW", "Error pre-drawing: %i", err);
 	}
 }
 
@@ -77,11 +80,11 @@ void Renderer::Render(Entity* _pEntity)
 	float fDimensions[2] = {_pEntity->GetWidth(), _pEntity->GetHeight()};
 	float fPosition[2] = {_pEntity->GetX() / Constants::k_fWorldWidth * 2.f - 1.f, _pEntity->GetY() / Constants::k_fWorldHeight * 2.f - 1.f};
 	m_pEntitiesShader->SetUniform4f("uPos", fPosition[0], fPosition[1], 0.f, 0.f);
-	float* color = _pEntity->GetColor();
-	m_pEntitiesShader->SetUniform4f("uColor", color[0], color[1], color[2], color[3]);
 	float fRotation = _pEntity->GetRotation() * 2.f * 3.1415f / 360.f;
 	Matrix4 matrix = GetWorldTransformationToView(fDimensions[0], fDimensions[1], fRotation);
 	m_pEntitiesShader->SetUniformMatrix4("uTransformationMatrix", matrix);
+	// Y coordinate of the pipe's texture map
+	m_pEntitiesShader->SetUniform1f("uYMaxTexCoord", 0.25f);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	GLint err = glGetError();
@@ -118,6 +121,7 @@ void Renderer::RenderPlayer(Entity* _pEntity)
 
 void Renderer::PostRender()
 {
+	glBindTexture(GL_TEXTURE_2D, 0);
 	m_pEntitiesVertexBuffer->Unbind();
 	m_pEntitiesShader->Unbind();
 }
@@ -183,7 +187,12 @@ void Renderer::InitBuffers()
 								-0.5f, -0.5f,
 								 0.5f,  0.5f,
 								-0.5f,  0.5f};
-		float vTexCoords[12] = {};
+		float vTexCoords[12] = {0.75f,  0.25f,
+								1.0f, 0.25f,
+								1.0f, 0.0f,
+								0.75f,  0.25f,
+								1.0f, 0.0f,
+								0.75f,  0.0f};
 		m_pEntitiesVertexBuffer = new VertexBuffer(vPositions, vTexCoords);
 	}
 
