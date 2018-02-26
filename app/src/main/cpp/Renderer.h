@@ -10,6 +10,8 @@ class Matrix4;
 class Shader;
 class VertexBuffer;
 
+#include <vector>
+
 class Renderer {
 public:
 	Renderer();
@@ -17,12 +19,8 @@ public:
 
 	void RenderBackground(float _fTime, bool _bInitState);
 
-	void PreRender();
-	void Render(Entity* _pEntity);
-	void PostRender();
-
+	void RenderPipes(std::vector<Entity*>& _vPipes);
 	void RenderPlayer(Entity* _pEntity);
-
 	void RenderPopup(bool _bStart);
 	void RenderScore(int _iScore);
 

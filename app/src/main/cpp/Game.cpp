@@ -65,16 +65,9 @@ void Game::Render()
 {
 	StateID eCurrentState = m_pStateMachine->GetCurrentState();
 	m_pRenderer->RenderBackground(eCurrentState == StateID::PLAYING ? m_fTimeInCurrentState * 0.05f : -1.f, eCurrentState == StateID::INIT);
-	m_pRenderer->PreRender();
 	// Render the entities in the game
-	for (unsigned int i = 0, iSize = m_vEntities.size(); i < iSize; ++i)
-	{
-		m_pRenderer->Render(m_vEntities.at(i));
-	}
-
+	m_pRenderer->RenderPipes(m_vEntities);
 	m_pRenderer->RenderPlayer(m_pPlayer);
-	m_pRenderer->PostRender();
-
 	m_pStateMachine->Render(this);
 }
 
